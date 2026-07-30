@@ -155,15 +155,57 @@ export interface InventoryItemEntity extends OfflineBaseEntity {
   expiryDate?: string;
 }
 
+export type InventoryTransactionType =
+  | 'initial_stock'
+  | 'purchase'
+  | 'stock_in'
+  | 'harvest_in'
+  | 'usage'
+  | 'sale_out'
+  | 'transfer_out'
+  | 'transfer_in'
+  | 'damage'
+  | 'loss'
+  | 'expired'
+  | 'return_in'
+  | 'return_out'
+  | 'correction_increase'
+  | 'correction_decrease';
+
 export interface InventoryTransactionEntity extends OfflineBaseEntity {
   inventoryItemId: string;
-  farmId?: string;
-  cropCycleId?: string;
-  changeType: 'ADD' | 'USE' | 'TRANSFER' | 'DAMAGE' | 'EXPIRY' | 'LOSS' | 'CORRECTION';
+  inventoryItemLocalId?: string;
+  inventoryItemServerId?: string | null;
+
+  transactionType?: InventoryTransactionType;
+  changeType?: 'ADD' | 'USE' | 'TRANSFER' | 'DAMAGE' | 'EXPIRY' | 'LOSS' | 'CORRECTION'; // legacy alias
+
+  quantity?: number;
   quantityKg: number;
   unit?: string;
+
+  unitCost?: number | null;
+  totalCost?: number | null;
+
+  farmId?: string;
+  farmLocalId?: string | null;
+  plotId?: string;
+  plotLocalId?: string | null;
+  cropCycleId?: string;
+  cropCycleLocalId?: string | null;
+  activityLocalId?: string | null;
+  expenseLocalId?: string | null;
+  harvestLocalId?: string | null;
+  saleLocalId?: string | null;
+
+  sourceLocation?: string | null;
+  destinationLocation?: string | null;
+
   reason: string;
+  notes?: string | null;
   date: string;
+  transactionDate?: string;
+
   idempotencyKey?: string;
 }
 

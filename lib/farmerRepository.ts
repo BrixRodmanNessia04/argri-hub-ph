@@ -10,6 +10,7 @@ import {
   ExpenseEntity,
   InventoryItemEntity,
   InventoryTransactionEntity,
+  InventoryTransactionType,
   PestDiseaseEntity,
   LaborLogEntity,
   EquipmentEntity,
@@ -619,4 +620,157 @@ export async function getUnifiedFarmerLogs(): Promise<UnifiedLogItem[]> {
   });
 
   return unified.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export async function recordInventoryMovement(params: {
+  inventoryItemId: string;
+  transactionType: InventoryTransactionType;
+  quantityKg: number;
+  unit?: string;
+  farmId?: string;
+  plotId?: string;
+  cropCycleId?: string;
+  activityLocalId?: string;
+  reason: string;
+  notes?: string;
+  unitCost?: number;
+  transactionDate?: string;
+  sourceLocation?: string;
+  destinationLocation?: string;
+  allowNegativeStock?: boolean;
+  customIdempotencyKey?: string;
+}): Promise<{ transaction: InventoryTransactionEntity; expense?: ExpenseEntity }> {
+  const item = await db.inventoryItems.get(params.inventoryItemId);
+  if (!item) throw new Error("Inventory stock item not found");
+
+  const txDate = params.transactionDate || new Date().toISOString().split("T")[0];
+  const calculatedUnitCost = params.unitCost ?? (item.unitCost || 0);
+  const calculatedTotalCost = params.quantityKg * calculatedUnitCost;
+
+  const isDeduction = [
+    "usage",
+    "sale_out",
+    "transfer_out",
+    "damage",
+    "loss",
+    "expired",
+    "return_out",
+    "correction_decrease",
+  ].includes(params.transactionType);
+
+  if (isDeduction) {
+    const newQty = item.quantityInKg - params.quantityKg;
+    if (newQty < 0 && !params.allowNegativeStock && params.transactionType !== "correction_decrease") {
+      throw new Error(`Cannot reduce stock below 0. Available: ${item.quantityInKg} ${item.unit || "kg"}`);
+    }
+    await db.inventoryItems.update(item.localId, {
+      quantityInKg: newQty > 0 ? newQty : 0,
+      updatedAt: new Date().toISOString(),
+    });
+  } else {
+    await db.inventoryItems.update(item.localId, {
+      quantityInKg: item.quantityInKg + params.quantityKg,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  const txIdempotencyKey = params.customIdempotencyKey || `tx_${params.transactionType}_${item.localId}_${Date.now()}`;
+
+  const transaction: InventoryTransactionEntity = {
+    ...createBaseEntity(),
+    inventoryItemId: item.localId,
+    inventoryItemLocalId: item.localId,
+    inventoryItemServerId: item.serverId,
+    transactionType: params.transactionType,
+    changeType: isDeduction ? "USE" : "ADD",
+    quantity: params.quantityKg,
+    quantityKg: params.quantityKg,
+    unit: params.unit || item.unit || "kg",
+    unitCost: calculatedUnitCost,
+    totalCost: calculatedTotalCost,
+    farmId: params.farmId || item.farmId,
+    plotId: params.plotId,
+    cropCycleId: params.cropCycleId,
+    activityLocalId: params.activityLocalId,
+    sourceLocation: params.sourceLocation || item.storageLocation,
+    destinationLocation: params.destinationLocation,
+    reason: params.reason,
+    notes: params.notes,
+    date: txDate,
+    transactionDate: txDate,
+    idempotencyKey: txIdempotencyKey,
+  };
+
+  await db.inventoryTransactions.add(transaction);
+  await queueSyncOperation("inventory_transactions", transaction.localId, "CREATE", transaction as unknown as Record<string, unknown>);
+
+  let expense: ExpenseEntity | undefined = undefined;
+
+  // AUTOMATIC EXPENSE RECORDING ON USAGE
+  if (params.transactionType === "usage") {
+    let expCategory: ExpenseEntity["category"] = "OTHER";
+    if (item.type === "FERTILIZER") expCategory = "FERTILIZER";
+    else if (item.type === "PESTICIDE") expCategory = "PESTICIDE";
+    else if (item.type === "HERBICIDE") expCategory = "HERBICIDE";
+    else if (item.type === "SEED") expCategory = "SEEDS";
+    else if (item.type === "SEEDLING") expCategory = "SEEDLINGS";
+    else if (item.type === "COMPOST") expCategory = "COMPOST";
+    else if (item.type === "FUEL") expCategory = "FUEL";
+    else if (item.type === "PACKAGING") expCategory = "PACKAGING";
+
+    const expenseAmount = calculatedTotalCost > 0 ? calculatedTotalCost : params.quantityKg * 40;
+
+    expense = {
+      ...createBaseEntity(),
+      farmId: params.farmId || item.farmId,
+      plotId: params.plotId,
+      cropCycleId: params.cropCycleId,
+      category: expCategory,
+      description: `Used ${params.quantityKg}${params.unit || item.unit || "kg"} ${item.crop} (${params.reason})`,
+      amount: expenseAmount,
+      quantity: params.quantityKg,
+      unitPrice: calculatedUnitCost > 0 ? calculatedUnitCost : 40,
+      unit: params.unit || item.unit || "kg",
+      date: txDate,
+      notes: `Auto-recorded from Warehouse Stock Usage (${params.transactionType})`,
+    };
+
+    await db.expenses.add(expense);
+    await queueSyncOperation("expenses", expense.localId, "CREATE", expense as unknown as Record<string, unknown>);
+
+    await db.inventoryTransactions.update(transaction.localId, {
+      expenseLocalId: expense.localId,
+    });
+  }
+
+  return { transaction, expense };
+}
+
+export async function getAvailableInventoryItems(params?: {
+  userId?: string;
+  farmLocalId?: string;
+  storageLocation?: string;
+  allowedCategories?: string[];
+  includeZeroStock?: boolean;
+}): Promise<InventoryItemEntity[]> {
+  let items = await db.inventoryItems.filter((i) => !i.isDeleted).toArray();
+
+  if (params?.farmLocalId) {
+    items = items.filter((i) => !i.farmId || i.farmId === params.farmLocalId);
+  }
+
+  if (params?.storageLocation) {
+    items = items.filter((i) => i.storageLocation === params.storageLocation);
+  }
+
+  if (!params?.includeZeroStock) {
+    items = items.filter((i) => (i.quantityInKg || 0) > 0);
+  }
+
+  if (params?.allowedCategories && params.allowedCategories.length > 0) {
+    const catsUpper = params.allowedCategories.map((c) => c.toUpperCase());
+    items = items.filter((i) => catsUpper.includes(i.type.toUpperCase()));
+  }
+
+  return items;
 }

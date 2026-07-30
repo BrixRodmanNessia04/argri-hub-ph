@@ -1,25 +1,43 @@
 "use client";
 
 import React from "react";
-import CoopSidebarNav from "@/components/CoopSidebarNav";
-import { Truck, CreditCard, Tag, BarChart3, ShieldCheck, Settings } from "lucide-react";
+import CoopLayout from "@/components/CoopLayout";
+import { Truck } from "lucide-react";
 
 export default function CoopFulfillmentPage() {
+  const dispatches = [
+    { orderId: "ORD-901", buyer: "Robinsons Supermarket", temp: "4°C (Refrigerated)", destination: "Bulacan DC", status: "SCHEDULED" },
+    { orderId: "ORD-902", buyer: "Metro Manila Restaurant", temp: "Ambient", destination: "Taguig Hub", status: "PREPARING" },
+  ];
+
   return (
-    <div className="min-h-[calc(100vh-57px)] bg-slate-950 text-slate-100 flex">
-      <CoopSidebarNav />
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto space-y-6">
-        <h1 className="text-2xl font-extrabold text-white">Cold-Chain Pickup &amp; Dispatch</h1>
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
-          <div className="flex items-center gap-2 text-teal-400 font-bold text-sm">
-            <Truck className="w-5 h-5" />
-            <span>Active Cold-Chain Shipments</span>
-          </div>
-          <p className="text-xs text-slate-400">
-            Dispatch schedule for Metro Manila wholesale delivery (Reefer Truck #CAR-809).
-          </p>
+    <CoopLayout>
+      <div className="space-y-6">
+        <div>
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30">
+            COLD-CHAIN DISPATCH FULFILLMENT
+          </span>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1">
+            Refrigerated Transport Dispatch
+          </h1>
         </div>
-      </main>
-    </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          {dispatches.map((d) => (
+            <div key={d.orderId} className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-2">
+              <div className="flex items-center justify-between font-bold">
+                <span className="font-mono text-teal-400 text-sm">{d.orderId}</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-400 font-extrabold border border-blue-800 text-[10px]">
+                  {d.status}
+                </span>
+              </div>
+              <h3 className="font-extrabold text-base text-white">{d.buyer}</h3>
+              <p className="text-slate-400">Destination: {d.destination}</p>
+              <p className="text-teal-400 font-semibold">Cold-Chain Temp: {d.temp}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </CoopLayout>
   );
 }

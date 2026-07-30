@@ -5,14 +5,17 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db, HarvestEntity, InventoryItemEntity, InventoryTransactionEntity, createBaseEntity } from "@/lib/db";
-import { createHarvest, queueSyncOperation } from "@/lib/farmerRepository";
+import { createHarvest, queueSyncOperation, recordInventoryMovement } from "@/lib/farmerRepository";
 import FarmerSubNav from "@/components/FarmerSubNav";
-import { ArrowLeft, Scissors, Save, CheckCircle2, AlertCircle, Warehouse } from "lucide-react";
+import { ArrowLeft, Scissors, Save, CheckCircle2, AlertCircle, Warehouse, Package } from "lucide-react";
 
 export default function NewHarvestPage() {
   const router = useRouter();
   const plots = useLiveQuery(() => db.plots.filter((p) => !p.isDeleted).toArray(), []) || [];
   const cycles = useLiveQuery(() => db.cropCycles.filter((c) => !c.isDeleted).toArray(), []) || [];
+  const inventoryItems = useLiveQuery(() => db.inventoryItems.filter((i) => !i.isDeleted).toArray(), []) || [];
+
+  const packagingItems = inventoryItems.filter((i) => ["PACKAGING", "OTHER"].includes(i.type.toUpperCase()));
 
   const [crop, setCrop] = useState("Benguet Cabbage");
   const [variety, setVariety] = useState("Scorpio F1");
@@ -27,12 +30,18 @@ export default function NewHarvestPage() {
   const [cropCycleId, setCropCycleId] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Requirement 9: Add to Farm Inventory & Storage options
+  // Add Harvest to Inventory Option
   const [addToInventory, setAddToInventory] = useState(true);
   const [storageLocation, setStorageLocation] = useState("La Trinidad Central Barn");
 
+  // Deduct Packaging Materials Option
+  const [selectedPackagingId, setSelectedPackagingId] = useState("");
+  const [packagingQtyUsed, setPackagingQtyUsed] = useState("");
+
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  const selectedPackaging = inventoryItems.find((i) => i.localId === selectedPackagingId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +80,7 @@ export default function NewHarvestPage() {
       coopApprovalStatus: "PENDING",
     });
 
-    // Requirement 9: Connect harvest to Warehouse Inventory
+    // Add harvest produce to Warehouse Inventory
     if (addToInventory && sale > 0) {
       const existingItems = await db.inventoryItems
         .filter((i) => !i.isDeleted && i.crop.toLowerCase() === crop.trim().toLowerCase() && i.type === "HARVESTED")
@@ -118,14 +127,28 @@ export default function NewHarvestPage() {
       }
     }
 
-    setFeedback(`Harvest record of ${totalWeight} kg ${crop} logged! Added to storage.`);
+    // Deduct packaging materials if selected
+    const packQtyNum = parseFloat(packagingQtyUsed) || 0;
+    if (selectedPackaging && packQtyNum > 0) {
+      await recordInventoryMovement({
+        inventoryItemId: selectedPackaging.localId,
+        transactionType: "usage",
+        quantityKg: packQtyNum,
+        unit: selectedPackaging.unit || "sacks",
+        plotId: plotId || undefined,
+        cropCycleId: cropCycleId || undefined,
+        reason: `Harvest packaging for ${crop} (${totalWeight} kg)`,
+      });
+    }
+
+    setFeedback(`Harvest record of ${totalWeight} kg ${crop} logged! Added to storage & packaging deducted.`);
     setTimeout(() => {
       router.push("/farmer/harvests");
     }, 1200);
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 pb-20">
+    <div className="min-h-screen bg-slate-100 text-slate-900 pb-28 font-sans">
       <FarmerSubNav />
 
       <main className="max-w-2xl mx-auto p-4 space-y-6 mt-2">
@@ -136,15 +159,15 @@ export default function NewHarvestPage() {
           <ArrowLeft className="w-4 h-4" /> Back to Harvests
         </Link>
 
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-5">
+        <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm space-y-5">
           <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
             <Scissors className="w-6 h-6 text-teal-600" />
             <div>
               <h1 className="text-xl font-extrabold text-slate-900">
-                Log Harvest Entry (Pag-ani)
+                Log Harvest Entry &amp; Packaging Usage
               </h1>
               <p className="text-xs text-slate-500">
-                Record crop harvest, grade quality, and allocation offline.
+                Record harvest yield, storage allocation, and deduct packaging materials from warehouse stock.
               </p>
             </div>
           </div>
@@ -157,7 +180,7 @@ export default function NewHarvestPage() {
           )}
 
           {feedback && (
-            <div className="p-3 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-2">
+            <div className="p-3.5 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
               <span>{feedback}</span>
             </div>
@@ -238,7 +261,7 @@ export default function NewHarvestPage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-gray-200 space-y-3">
+            <div className="p-4 rounded-2xl bg-slate-50 border border-gray-200 space-y-3">
               <span className="text-xs font-bold text-slate-800">Harvest Allocation Breakdown (Kg)</span>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
@@ -280,8 +303,8 @@ export default function NewHarvestPage() {
               </div>
             </div>
 
-            {/* Requirement 9: Warehouse storage integration option */}
-            <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-3">
+            {/* Warehouse Storage Integration */}
+            <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3">
               <label className="flex items-center gap-2 text-xs font-extrabold text-emerald-900 cursor-pointer">
                 <input
                   type="checkbox"
@@ -307,6 +330,44 @@ export default function NewHarvestPage() {
                   />
                 </div>
               )}
+            </div>
+
+            {/* Deduct Packaging Materials */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-gray-200 space-y-3">
+              <div className="flex items-center gap-1.5 text-slate-800 font-bold text-xs">
+                <Package className="w-4 h-4 text-emerald-600" />
+                <span>Deduct Packaging Materials from Warehouse (Optional)</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <select
+                    value={selectedPackagingId}
+                    onChange={(e) => setSelectedPackagingId(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-white border border-gray-300 text-xs font-semibold"
+                  >
+                    <option value="">-- Select Packaging Material --</option>
+                    {packagingItems.map((i) => (
+                      <option key={i.localId} value={i.localId}>
+                        {i.crop} — Available: {i.quantityInKg} {i.unit || "sacks"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {selectedPackaging && (
+                  <div>
+                    <input
+                      type="number"
+                      step="1"
+                      value={packagingQtyUsed}
+                      onChange={(e) => setPackagingQtyUsed(e.target.value)}
+                      placeholder={`Quantity used (${selectedPackaging.unit || "sacks"})`}
+                      className="w-full p-2.5 rounded-xl bg-white border border-gray-300 text-xs font-bold text-emerald-700"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -353,10 +414,10 @@ export default function NewHarvestPage() {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2"
               >
                 <Save className="w-4 h-4" />
-                <span>Save Harvest Log (Offline Saved)</span>
+                <span>Save Harvest &amp; Packaging Usage</span>
               </button>
             </div>
           </form>

@@ -1,19 +1,32 @@
 "use client";
 
 import React from "react";
-import CoopSidebarNav from "@/components/CoopSidebarNav";
-import { Tag } from "lucide-react";
+import CoopLayout from "@/components/CoopLayout";
 
 export default function CoopPricingPage() {
   return (
-    <div className="min-h-[calc(100vh-57px)] bg-slate-950 text-slate-100 flex">
-      <CoopSidebarNav />
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto space-y-6">
-        <h1 className="text-2xl font-extrabold text-white">Cooperative Base Pricing Strategy</h1>
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
-          <p className="text-xs text-slate-400">Configure floor and wholesale target prices per crop grade.</p>
+    <CoopLayout>
+      <div className="space-y-6">
+        <div>
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30">
+            BASE PRICING STRATEGY
+          </span>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1">
+            Cooperative Base Floor Pricing
+          </h1>
         </div>
-      </main>
-    </div>
+
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 text-xs">
+          <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-950 border border-slate-800">
+            <span className="font-extrabold text-white">Highland Cabbage (Class A)</span>
+            <span className="font-extrabold text-emerald-400 text-sm">₱40.00 / kg</span>
+          </div>
+          <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-950 border border-slate-800">
+            <span className="font-extrabold text-white">Atok Carrots (Class A)</span>
+            <span className="font-extrabold text-emerald-400 text-sm">₱55.00 / kg</span>
+          </div>
+        </div>
+      </div>
+    </CoopLayout>
   );
 }
