@@ -410,6 +410,231 @@ export interface InventoryRecord {
   updatedAt: string;
 }
 
+import {
+  UserRole,
+  OrganizationType,
+  ProducerType,
+  SiteType,
+  CommodityCategory,
+  VerificationStatus,
+} from '@/types/roles';
+
+export interface UserProfileEntity extends OfflineBaseEntity {
+  email: string;
+  fullName: string;
+  phone?: string;
+  avatarUrl?: string;
+  roles: UserRole[];
+  primaryRole: UserRole;
+  verificationStatus: VerificationStatus;
+  preferredLanguage: string;
+  mfaEnabled: boolean;
+}
+
+export interface ProducerProfileEntity extends OfflineBaseEntity {
+  producerType: ProducerType;
+  localReference?: string;
+  governmentReference?: string;
+  preferredLanguage: string;
+  primaryLocationId?: string;
+  verificationStatus: VerificationStatus;
+  profileCompletionStatus: string;
+}
+
+export interface OrganizationEntity extends OfflineBaseEntity {
+  name: string;
+  type: OrganizationType;
+  registrationNumber?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  address: string;
+  region: string;
+  province: string;
+  cityMunicipality: string;
+  authorizedRepresentative: string;
+  verificationStatus: VerificationStatus;
+  isVerified: boolean;
+  operationalStatus: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  description?: string;
+  logoUrl?: string;
+}
+
+export interface OrganizationMembershipEntity extends OfflineBaseEntity {
+  organizationId: string;
+  roleInOrganization: string;
+  permissions: string[];
+  status: 'ACTIVE' | 'PENDING' | 'REJECTED' | 'REVOKED';
+  joinedAt: string;
+}
+
+export interface ProductionSiteEntity extends OfflineBaseEntity {
+  name: string;
+  siteType: SiteType;
+  location: string;
+  region?: string;
+  province?: string;
+  latitude?: number;
+  longitude?: number;
+  areaHectares?: number;
+  waterVolumeCubicMeters?: number;
+  capacity?: number;
+  unitOfCapacity?: string;
+  primaryCommodity?: string;
+  notes?: string;
+}
+
+export interface CommodityItemEntity extends OfflineBaseEntity {
+  code: string;
+  name: string;
+  tagalogName?: string;
+  category: CommodityCategory;
+  subcategory?: string;
+  hsCode?: string;
+  standardUnit: string;
+  allowedGrades: string[];
+  shelfLifeDays?: number;
+  storageTempCelsius?: string;
+  isSeasonal: boolean;
+  peakMonths?: string[];
+}
+
+export interface DocumentEntity extends OfflineBaseEntity {
+  title: string;
+  documentType: 'GOVT_ID' | 'LAND_TITLE' | 'VESSEL_PERMIT' | 'COOP_REGISTRATION' | 'SANITARY_PERMIT' | 'ORGANIC_CERT' | 'OTHER';
+  entityType: 'USER' | 'PRODUCER' | 'ORGANIZATION' | 'SITE' | 'COMMODITY';
+  entityLocalId: string;
+  fileUrl?: string;
+  fileName?: string;
+  fileSizeBytes?: number;
+  mimeType?: string;
+  verificationStatus: VerificationStatus;
+  verifiedByUserId?: string;
+  verifiedAt?: string;
+  notes?: string;
+}
+
+export interface CertificationEntity extends OfflineBaseEntity {
+  title: string;
+  certificationType: 'GAP' | 'GAQP' | 'ORGANIC' | 'HALAL' | 'HACCP' | 'LGU_PERMIT' | 'BFAR_LICENSE' | 'DA_ACCREDITATION';
+  issuingAuthority: string;
+  certificateNumber: string;
+  entityType: 'PRODUCER' | 'ORGANIZATION' | 'SITE' | 'COMMODITY';
+  entityLocalId: string;
+  issuedAt: string;
+  expiresAt?: string;
+  verificationStatus: VerificationStatus;
+  certificateFileUrl?: string;
+}
+
+export interface AuditLogEntity extends OfflineBaseEntity {
+  actorUserId: string;
+  actorRole: string;
+  action: string;
+  targetEntity: string;
+  targetEntityId: string;
+  details?: string;
+  ipAddress?: string;
+  timestamp: string;
+}
+
+export type ProductionCycleType =
+  | 'crop'
+  | 'capture_fishing'
+  | 'aquaculture'
+  | 'livestock'
+  | 'poultry';
+
+export interface ProductionCycleEntity extends OfflineBaseEntity {
+  cycleType: ProductionCycleType;
+  siteId?: string;
+  commodityName: string;
+  commodityCategory?: string;
+  startDate: string;
+  estimatedHarvestDate: string;
+  status: 'PLANTED' | 'GROWING' | 'HARVESTING' | 'COMPLETED' | 'CANCELLED';
+  targetYieldKg?: number;
+  actualYieldKg?: number;
+  mortalityRate?: number;
+  vesselId?: string;
+  notes?: string;
+}
+
+export interface FishingTripEntity extends OfflineBaseEntity {
+  vesselName: string;
+  vesselRegistrationNumber?: string;
+  departurePort: string;
+  arrivalPort?: string;
+  departedAt: string;
+  returnedAt?: string;
+  fishingGround: string;
+  fuelUsedLiters?: number;
+  crewCount: number;
+  status: 'DEPARTED' | 'FISHING' | 'RETURNED' | 'CANCELLED';
+}
+
+export interface CatchLogEntity extends OfflineBaseEntity {
+  tripId: string;
+  speciesName: string;
+  weightKg: number;
+  qualityGrade: string;
+  preservationMethod: 'chilled_ice' | 'frozen' | 'live' | 'ambient';
+  caughtAtCoordinates?: string;
+  caughtAtDate: string;
+  forSaleKg?: number;
+  homeUseKg?: number;
+}
+
+export interface AquacultureCycleEntity extends OfflineBaseEntity {
+  siteId: string;
+  speciesName: string;
+  stockingDensityPerSqM?: number;
+  totalStockCount: number;
+  stockingDate: string;
+  expectedHarvestDate: string;
+  waterSalinityPpt?: number;
+  waterTempCelsius?: number;
+  phLevel?: number;
+  dissolvedOxygen?: number;
+  status: 'STOCKING' | 'GROWING' | 'HARVESTING' | 'COMPLETED';
+}
+
+export interface LivestockPoultryBatchEntity extends OfflineBaseEntity {
+  siteId: string;
+  animalType: 'cattle' | 'swine' | 'broiler' | 'layer' | 'duck' | 'goat' | 'sheep';
+  batchName: string;
+  breed?: string;
+  headCount: number;
+  housingType?: string;
+  startDate: string;
+  expectedMarketDate: string;
+  vaccinationStatus?: string;
+  status: 'ACTIVE' | 'MARKET_READY' | 'COMPLETED';
+}
+
+export interface HealthObservationEntity extends OfflineBaseEntity {
+  sector: 'crops' | 'fisheries' | 'aquaculture' | 'livestock' | 'poultry';
+  siteId?: string;
+  cycleId?: string;
+  observationType: 'PEST' | 'DISEASE' | 'AQUATIC_MORTALITY' | 'WATER_ANOMALY' | 'ANIMAL_ILLNESS' | 'WEED';
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  symptoms: string;
+  treatmentApplied?: string;
+  inputUsedId?: string;
+  observedAt: string;
+}
+
+export interface ProductionForecastEntity extends OfflineBaseEntity {
+  cooperativeId: string;
+  producerUserId: string;
+  producerName?: string;
+  commodityName: string;
+  sector: 'crop' | 'capture_fishing' | 'aquaculture' | 'livestock' | 'poultry';
+  expectedYieldKg: number;
+  forecastWindowStart: string;
+  forecastWindowEnd: string;
+  confidenceScore: number;
+}
+
 const db = new Dexie('AgriAppDB') as Dexie & {
   harvestsLegacy: EntityTable<HarvestRecord, 'id'>;
   logsLegacy: EntityTable<LogRecord, 'id'>;
@@ -438,6 +663,26 @@ const db = new Dexie('AgriAppDB') as Dexie & {
   syncConflicts: EntityTable<SyncConflictEntity, 'localId'>;
   cachedReferenceData: EntityTable<CachedReferenceDataEntity, 'key'>;
   localSession: EntityTable<LocalSessionEntity, 'key'>;
+
+  // Phase A Multi-Domain Entities
+  userProfiles: EntityTable<UserProfileEntity, 'localId'>;
+  producerProfiles: EntityTable<ProducerProfileEntity, 'localId'>;
+  organizations: EntityTable<OrganizationEntity, 'localId'>;
+  organizationMemberships: EntityTable<OrganizationMembershipEntity, 'localId'>;
+  productionSites: EntityTable<ProductionSiteEntity, 'localId'>;
+  commodityCatalog: EntityTable<CommodityItemEntity, 'localId'>;
+  documents: EntityTable<DocumentEntity, 'localId'>;
+  certifications: EntityTable<CertificationEntity, 'localId'>;
+  auditLogs: EntityTable<AuditLogEntity, 'localId'>;
+
+  // Phase B Production Management Entities
+  productionCycles: EntityTable<ProductionCycleEntity, 'localId'>;
+  fishingTrips: EntityTable<FishingTripEntity, 'localId'>;
+  catchLogs: EntityTable<CatchLogEntity, 'localId'>;
+  aquacultureCycles: EntityTable<AquacultureCycleEntity, 'localId'>;
+  livestockPoultryBatches: EntityTable<LivestockPoultryBatchEntity, 'localId'>;
+  healthObservations: EntityTable<HealthObservationEntity, 'localId'>;
+  productionForecasts: EntityTable<ProductionForecastEntity, 'localId'>;
 };
 
 db.version(1).stores({
@@ -477,7 +722,6 @@ db.version(4).stores({
   localSession: 'key, userId, role, lastActiveAt',
 });
 
-// Version 5: Complete Farmer Module entities (Pests, Labor, Equipment, Tasks, General Logs, Form Drafts)
 db.version(5).stores({
   harvestsLegacy: '++id, farmerId, coopId, crop, syncStatus',
   logsLegacy: '++id, farmerId, coopId, crop, syncStatus, actionType',
@@ -506,6 +750,97 @@ db.version(5).stores({
   syncConflicts: 'localId, entityType, entityLocalId, status, detectedAt',
   cachedReferenceData: 'key, cachedAt, expiresAt',
   localSession: 'key, userId, role, lastActiveAt',
+});
+
+// Version 6: Full Platform Foundation
+db.version(6).stores({
+  harvestsLegacy: '++id, farmerId, coopId, crop, syncStatus',
+  logsLegacy: '++id, farmerId, coopId, crop, syncStatus, actionType',
+  inventoryLegacy: '++id, crop, type, updatedAt',
+
+  farms: 'localId, serverId, userId, cooperativeId, syncStatus, updatedAt',
+  plots: 'localId, serverId, farmId, userId, syncStatus, updatedAt',
+  cropCycles: 'localId, serverId, plotId, crop, status, syncStatus, updatedAt',
+  fieldActivities: 'localId, serverId, cropCycleId, plotId, farmId, activityType, syncStatus, loggedAt',
+  harvests: 'localId, serverId, cropCycleId, plotId, farmId, crop, syncStatus, harvestedAt',
+  sales: 'localId, serverId, harvestId, farmId, cropCycleId, crop, syncStatus, soldAt',
+  expenses: 'localId, serverId, category, farmId, plotId, cropCycleId, syncStatus, date',
+  inventoryItems: 'localId, serverId, crop, type, farmId, syncStatus, updatedAt',
+  inventoryTransactions: 'localId, serverId, inventoryItemId, farmId, cropCycleId, changeType, syncStatus, date',
+  pestsDiseases: 'localId, serverId, farmId, plotId, cropCycleId, observationType, severity, status, syncStatus, updatedAt',
+  laborLogs: 'localId, serverId, farmId, plotId, cropCycleId, workType, paymentStatus, syncStatus, date',
+  equipment: 'localId, serverId, ownership, condition, syncStatus, updatedAt',
+  equipmentLogs: 'localId, serverId, equipmentId, farmId, plotId, cropCycleId, logType, syncStatus, date',
+  tasks: 'localId, serverId, farmId, plotId, cropCycleId, status, priority, dueDate, syncStatus, updatedAt',
+  generalLogs: 'localId, serverId, farmId, plotId, cropCycleId, logType, syncStatus, date',
+  formDrafts: 'key, formId, updatedAt',
+  notifications: 'localId, userId, read, createdAt',
+  smsQueue: 'localId, userId, messageType, syncStatus, idempotencyKey, createdAt',
+  mediaQueue: 'localId, entityLocalId, syncStatus, createdAt',
+  syncQueue: 'localId, entityType, entityLocalId, operation, createdAt',
+  syncConflicts: 'localId, entityType, entityLocalId, status, detectedAt',
+  cachedReferenceData: 'key, cachedAt, expiresAt',
+  localSession: 'key, userId, role, lastActiveAt',
+
+  userProfiles: 'localId, serverId, userId, email, primaryRole, syncStatus, updatedAt',
+  producerProfiles: 'localId, serverId, userId, producerType, verificationStatus, syncStatus, updatedAt',
+  organizations: 'localId, serverId, type, verificationStatus, isVerified, operationalStatus, syncStatus, updatedAt',
+  organizationMemberships: 'localId, serverId, organizationId, userId, status, syncStatus, updatedAt',
+  productionSites: 'localId, serverId, siteType, primaryCommodity, syncStatus, updatedAt',
+  commodityCatalog: 'localId, code, category, isSeasonal, syncStatus, updatedAt',
+  documents: 'localId, serverId, documentType, entityType, entityLocalId, verificationStatus, syncStatus, updatedAt',
+  certifications: 'localId, serverId, certificationType, entityType, entityLocalId, verificationStatus, syncStatus, updatedAt',
+  auditLogs: 'localId, actorUserId, actorRole, action, targetEntity, timestamp, syncStatus',
+});
+
+// Version 7: Phase B Multi-Sector Production Management
+db.version(7).stores({
+  harvestsLegacy: '++id, farmerId, coopId, crop, syncStatus',
+  logsLegacy: '++id, farmerId, coopId, crop, syncStatus, actionType',
+  inventoryLegacy: '++id, crop, type, updatedAt',
+
+  farms: 'localId, serverId, userId, cooperativeId, syncStatus, updatedAt',
+  plots: 'localId, serverId, farmId, userId, syncStatus, updatedAt',
+  cropCycles: 'localId, serverId, plotId, crop, status, syncStatus, updatedAt',
+  fieldActivities: 'localId, serverId, cropCycleId, plotId, farmId, activityType, syncStatus, loggedAt',
+  harvests: 'localId, serverId, cropCycleId, plotId, farmId, crop, syncStatus, harvestedAt',
+  sales: 'localId, serverId, harvestId, farmId, cropCycleId, crop, syncStatus, soldAt',
+  expenses: 'localId, serverId, category, farmId, plotId, cropCycleId, syncStatus, date',
+  inventoryItems: 'localId, serverId, crop, type, farmId, syncStatus, updatedAt',
+  inventoryTransactions: 'localId, serverId, inventoryItemId, farmId, cropCycleId, changeType, syncStatus, date',
+  pestsDiseases: 'localId, serverId, farmId, plotId, cropCycleId, observationType, severity, status, syncStatus, updatedAt',
+  laborLogs: 'localId, serverId, farmId, plotId, cropCycleId, workType, paymentStatus, syncStatus, date',
+  equipment: 'localId, serverId, ownership, condition, syncStatus, updatedAt',
+  equipmentLogs: 'localId, serverId, equipmentId, farmId, plotId, cropCycleId, logType, syncStatus, date',
+  tasks: 'localId, serverId, farmId, plotId, cropCycleId, status, priority, dueDate, syncStatus, updatedAt',
+  generalLogs: 'localId, serverId, farmId, plotId, cropCycleId, logType, syncStatus, date',
+  formDrafts: 'key, formId, updatedAt',
+  notifications: 'localId, userId, read, createdAt',
+  smsQueue: 'localId, userId, messageType, syncStatus, idempotencyKey, createdAt',
+  mediaQueue: 'localId, entityLocalId, syncStatus, createdAt',
+  syncQueue: 'localId, entityType, entityLocalId, operation, createdAt',
+  syncConflicts: 'localId, entityType, entityLocalId, status, detectedAt',
+  cachedReferenceData: 'key, cachedAt, expiresAt',
+  localSession: 'key, userId, role, lastActiveAt',
+
+  userProfiles: 'localId, serverId, userId, email, primaryRole, syncStatus, updatedAt',
+  producerProfiles: 'localId, serverId, userId, producerType, verificationStatus, syncStatus, updatedAt',
+  organizations: 'localId, serverId, type, verificationStatus, isVerified, operationalStatus, syncStatus, updatedAt',
+  organizationMemberships: 'localId, serverId, organizationId, userId, status, syncStatus, updatedAt',
+  productionSites: 'localId, serverId, siteType, primaryCommodity, syncStatus, updatedAt',
+  commodityCatalog: 'localId, code, category, isSeasonal, syncStatus, updatedAt',
+  documents: 'localId, serverId, documentType, entityType, entityLocalId, verificationStatus, syncStatus, updatedAt',
+  certifications: 'localId, serverId, certificationType, entityType, entityLocalId, verificationStatus, syncStatus, updatedAt',
+  auditLogs: 'localId, actorUserId, actorRole, action, targetEntity, timestamp, syncStatus',
+
+  // Phase B Tables
+  productionCycles: 'localId, serverId, cycleType, commodityName, status, syncStatus, updatedAt',
+  fishingTrips: 'localId, serverId, vesselName, fishingGround, status, syncStatus, departedAt',
+  catchLogs: 'localId, serverId, tripId, speciesName, syncStatus, caughtAtDate',
+  aquacultureCycles: 'localId, serverId, siteId, speciesName, status, syncStatus, stockingDate',
+  livestockPoultryBatches: 'localId, serverId, siteId, animalType, status, syncStatus, startDate',
+  healthObservations: 'localId, serverId, sector, observationType, severity, syncStatus, observedAt',
+  productionForecasts: 'localId, cooperativeId, producerUserId, commodityName, sector, forecastWindowStart',
 });
 
 export function generateLocalId(): string {
