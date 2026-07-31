@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAppRoute } from "@/lib/navigation";
 import {
   Home,
   FileText,
@@ -25,6 +26,7 @@ import FarmerBottomNav from "./FarmerBottomNav";
 
 export default function FarmerSubNav() {
   const pathname = usePathname();
+  const buildRoute = useAppRoute();
 
   const navLinks = [
     { href: "/farmer", label: "Dashboard", icon: Home },
@@ -52,12 +54,13 @@ export default function FarmerSubNav() {
           <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-none">
             {navLinks.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const targetRoute = buildRoute(item.href);
+              const isActive = pathname === targetRoute || pathname === item.href;
 
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={targetRoute}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
                     isActive
                       ? "bg-white text-emerald-950 shadow-sm"

@@ -132,32 +132,32 @@ export default function BuyerMarketPage() {
   );
 
   return (
-    <div className="min-h-[calc(100vh-56px)] bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-[calc(100vh-56px)] bg-[#f6fbf7] text-[#163025] flex flex-col font-sans">
       {/* Storefront Header */}
-      <header className="bg-slate-900 border-b border-slate-800 py-6 px-4">
+      <header className="bg-white border-b border-[#dce9df] py-6 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0]">
                 B2B DIRECT WHOLESALE
               </span>
-              <span className="text-xs text-slate-400">Coop-Verified Supply Chain</span>
+              <span className="text-xs text-[#5f7469]">Coop-Verified Supply Chain</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mt-1.5">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-[#163025] tracking-tight mt-1.5">
               AgriHub B2B Produce Market
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-[#5f7469] mt-1">
               Direct-from-cooperative wholesale produce for Metro Manila supermarkets, restaurants &amp; distributors.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs">
-              <Truck className="w-4 h-4 text-emerald-400" />
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-xs font-bold">
+              <Truck className="w-4 h-4 text-[#059669]" />
               <span>Cold-Chain Next-Day Delivery</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs">
-              <ShieldCheck className="w-4 h-4 text-blue-400" />
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-xs font-bold">
+              <ShieldCheck className="w-4 h-4 text-[#059669]" />
               <span>Escrow Protected</span>
             </div>
           </div>
@@ -169,50 +169,50 @@ export default function BuyerMarketPage() {
         {/* Left Area: Produce Catalog Grid */}
         <div className="lg:col-span-8 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Store className="w-5 h-5 text-blue-400" />
+            <h2 className="text-lg font-bold text-[#163025] flex items-center gap-2">
+              <Store className="w-5 h-5 text-[#059669]" />
               Available Wholesale Lots ({produceCatalog.length})
             </h2>
-            <span className="text-xs text-slate-400">Minimum wholesale increment: 50 kg</span>
+            <span className="text-xs text-[#5f7469]">Minimum wholesale increment: 50 kg</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {produceCatalog.map((item) => (
               <div
                 key={item.id}
-                className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between hover:border-blue-500/40 transition-all group"
+                className="bg-white border border-[#dce9df] rounded-2xl p-5 shadow-xs flex flex-col justify-between hover:border-[#059669] transition-all group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0]">
                       <Sprout className="w-3.5 h-3.5" />
                       {item.category}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium">
+                    <span className="text-xs text-[#5f7469] font-medium">
                       {item.grade}
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-lg font-bold text-[#163025] group-hover:text-[#059669] transition-colors">
                     {item.name}
                   </h3>
 
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
-                    <MapPin className="w-3.5 h-3.5 text-slate-500" />
+                  <div className="flex items-center gap-1.5 text-xs text-[#5f7469] mt-1">
+                    <MapPin className="w-3.5 h-3.5 text-[#5f7469]" />
                     <span>{item.origin}</span>
                   </div>
 
-                  <div className="mt-4 p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+                  <div className="mt-4 p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-slate-400">Wholesale Price</p>
-                      <p className="text-xl font-extrabold text-emerald-400">
+                      <p className="text-xs text-[#5f7469]">Wholesale Price</p>
+                      <p className="text-xl font-extrabold text-[#059669]">
                         ₱{item.pricePerKg.toFixed(2)}{" "}
-                        <span className="text-xs font-normal text-slate-400">/ kg</span>
+                        <span className="text-xs font-normal text-[#5f7469]">/ kg</span>
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-slate-400">Available Pool</p>
-                      <p className="font-bold text-white">{item.availableKg} kg</p>
+                      <p className="text-xs text-[#5f7469]">Available Pool</p>
+                      <p className="font-bold text-[#163025]">{item.availableKg} kg</p>
                     </div>
                   </div>
                 </div>

@@ -75,36 +75,44 @@ export default function FarmerPwaMainPage() {
   const expenses = useLiveQuery(() => db.expenses.filter((e) => !e.isDeleted).toArray(), []) || [];
   const laborLogs = useLiveQuery(() => db.laborLogs.filter((l) => !l.isDeleted).toArray(), []) || [];
 
-  const totalSales = sales.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
-  const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0) + laborLogs.reduce((sum, l) => sum + (l.totalCost || 0), 0);
+  const normalizedSales = sales.map((s) => ({
+    id: s.localId,
+    desc: `Sold ${s.weightKg || 0}kg ${s.crop || "Produce"}`,
+    amount: Number(s.totalAmount ?? s.grossAmount ?? (s.weightKg && s.pricePerKg ? s.weightKg * s.pricePerKg : 0)) || 0,
+    type: "SALE" as const,
+    date: s.soldAt || s.createdAt || new Date().toISOString().split("T")[0],
+    url: `/farmer/sales/${s.localId}`,
+  }));
+
+  const normalizedExpenses = expenses.map((e) => ({
+    id: e.localId,
+    desc: e.description || `${e.category} Expense`,
+    amount: Number(e.amount) || 0,
+    type: "COST" as const,
+    date: e.date || e.createdAt || new Date().toISOString().split("T")[0],
+    url: `/farmer/expenses/${e.localId}`,
+  }));
+
+  const normalizedLabor = laborLogs.map((l) => ({
+    id: l.localId,
+    desc: `Labor: ${l.workerGroup || l.workType || "Farm Worker"}`,
+    amount: Number(l.totalCost) || 0,
+    type: "COST" as const,
+    date: l.date || l.createdAt || new Date().toISOString().split("T")[0],
+    url: `/farmer/labor`,
+  }));
+
+  const totalSales = normalizedSales.reduce((sum, s) => sum + s.amount, 0);
+  const totalExpenses = normalizedExpenses.reduce((sum, e) => sum + e.amount, 0) + normalizedLabor.reduce((sum, l) => sum + l.amount, 0);
 
   // Recent ledger entries combined
   const recentEntries = [
-    ...sales.map((s) => ({
-      id: s.localId,
-      desc: `Sold ${s.weightKg}kg ${s.crop}`,
-      amount: s.totalAmount,
-      type: "SALE" as const,
-      date: s.soldAt,
-      url: `/farmer/sales/${s.localId}`,
-    })),
-    ...expenses.map((e) => ({
-      id: e.localId,
-      desc: e.description,
-      amount: e.amount,
-      type: "COST" as const,
-      date: e.date,
-      url: `/farmer/expenses/${e.localId}`,
-    })),
-    ...laborLogs.map((l) => ({
-      id: l.localId,
-      desc: `Labor: ${l.workerGroup}`,
-      amount: l.totalCost,
-      type: "COST" as const,
-      date: l.date,
-      url: `/farmer/labor`,
-    })),
-  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 3);
+    ...normalizedSales,
+    ...normalizedExpenses,
+    ...normalizedLabor,
+  ]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
 
   // AI Parser & Confirmation dialog trigger
   const handleSmartSubmit = (e: React.FormEvent) => {
@@ -388,7 +396,7 @@ export default function FarmerPwaMainPage() {
                         }`}
                       >
                         {tx.type === "SALE" ? "+" : "-"} ₱
-                        {tx.amount.toLocaleString()}
+                        {(tx.amount || 0).toLocaleString()}
                       </span>
                     </Link>
                   ))

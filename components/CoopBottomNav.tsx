@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAppRoute } from "@/lib/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -17,6 +18,7 @@ interface CoopBottomNavProps {
 
 export default function CoopBottomNav({ onOpenDrawer }: CoopBottomNavProps) {
   const pathname = usePathname();
+  const buildRoute = useAppRoute();
 
   const navItems = [
     { href: "/coop/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -26,23 +28,24 @@ export default function CoopBottomNav({ onOpenDrawer }: CoopBottomNavProps) {
   ];
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-2 py-2">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#dce9df] px-2 py-2 shadow-lg">
       <div className="max-w-md mx-auto flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || (item.href !== "/coop/dashboard" && pathname.startsWith(item.href));
+          const targetRoute = buildRoute(item.href);
+          const isActive = pathname === targetRoute || pathname === item.href;
 
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={targetRoute}
               className={`flex flex-col items-center gap-1 py-1.5 px-3 rounded-2xl transition-all ${
                 isActive
-                  ? "text-teal-400 font-extrabold"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "text-[#059669] font-extrabold"
+                  : "text-[#5f7469] hover:text-[#163025]"
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? "text-teal-400 scale-110" : "text-slate-400"}`} />
+              <Icon className={`w-5 h-5 ${isActive ? "text-[#059669] scale-110" : "text-[#5f7469]"}`} />
               <span className="text-[10px] tracking-tight">{item.label}</span>
             </Link>
           );
@@ -51,9 +54,9 @@ export default function CoopBottomNav({ onOpenDrawer }: CoopBottomNavProps) {
         {/* More Tab -> opens Drawer */}
         <button
           onClick={onOpenDrawer}
-          className="flex flex-col items-center gap-1 py-1.5 px-3 rounded-2xl text-slate-400 hover:text-slate-200"
+          className="flex flex-col items-center gap-1 py-1.5 px-3 rounded-2xl text-[#5f7469] hover:text-[#163025]"
         >
-          <Menu className="w-5 h-5 text-slate-400" />
+          <Menu className="w-5 h-5 text-[#5f7469]" />
           <span className="text-[10px] tracking-tight">More</span>
         </button>
       </div>

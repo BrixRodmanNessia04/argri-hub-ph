@@ -1,58 +1,75 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
-import { UserRole } from "@/types/roles";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { seedProductionDatabase } from "@/lib/db";
+import { seedDemoDatabase } from "@/lib/demoDb";
 
 export type ApplicationMode = "production" | "demo";
 
-export interface ApplicationContextState {
+export type WorkspaceRole =
+  | "farmer"
+  | "fisher"
+  | "coop"
+  | "buyer"
+  | "processor"
+  | "transport"
+  | "government"
+  | "finance"
+  | "admin";
+
+export interface WorkspaceContext {
   mode: ApplicationMode;
-  demoRole?: UserRole | string;
+  role: WorkspaceRole;
   userId: string;
-  tenantId?: string;
-  organizationId?: string;
+  organizationId?: string | null;
+  tenantId: string;
   setMode: (mode: ApplicationMode) => void;
-  setDemoRole: (role: UserRole | string) => void;
+  setRole: (role: WorkspaceRole) => void;
 }
 
-const defaultContextValue: ApplicationContextState = {
+const defaultContextValue: WorkspaceContext = {
   mode: "production",
-  demoRole: undefined,
-  userId: "user-default-123",
-  tenantId: "tenant-default-456",
-  organizationId: "org-default-789",
+  role: "farmer",
+  userId: "prod-user-123",
+  organizationId: "prod-org-456",
+  tenantId: "prod-tenant-789",
   setMode: () => {},
-  setDemoRole: () => {},
+  setRole: () => {},
 };
 
-const ApplicationContext = createContext<ApplicationContextState>(defaultContextValue);
+const ApplicationContext = createContext<WorkspaceContext>(defaultContextValue);
 
 export function ApplicationContextProvider({
   children,
   initialMode = "production",
-  initialDemoRole,
+  initialRole = "farmer",
 }: {
   children: React.ReactNode;
   initialMode?: ApplicationMode;
-  initialDemoRole?: UserRole | string;
+  initialRole?: WorkspaceRole;
 }) {
   const [mode, setMode] = useState<ApplicationMode>(initialMode);
-  const [demoRole, setDemoRole] = useState<UserRole | string | undefined>(initialDemoRole);
+  const [role, setRole] = useState<WorkspaceRole>(initialRole);
 
-  const userId = mode === "demo" ? `demo-user-${demoRole || "guest"}` : "prod-user-123";
-  const tenantId = mode === "demo" ? `demo-tenant-${demoRole || "guest"}` : "prod-tenant-456";
-  const organizationId = mode === "demo" ? `demo-org-${demoRole || "guest"}` : "prod-org-789";
+  useEffect(() => {
+    seedProductionDatabase();
+    seedDemoDatabase();
+  }, []);
+
+  const userId = mode === "demo" ? `demo-user-${role}` : "prod-user-123";
+  const tenantId = mode === "demo" ? `demo-tenant-${role}` : "prod-tenant-789";
+  const organizationId = mode === "demo" ? `demo-org-${role}` : "prod-org-456";
 
   return (
     <ApplicationContext.Provider
       value={{
         mode,
-        demoRole,
+        role,
         userId,
-        tenantId,
         organizationId,
+        tenantId,
         setMode,
-        setDemoRole,
+        setRole,
       }}
     >
       {children}

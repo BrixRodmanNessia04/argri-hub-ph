@@ -11,9 +11,9 @@ export default function FarmerLedgerPage() {
   const expenses = useLiveQuery(() => db.expenses.toArray(), []) || [];
   const activities = useLiveQuery(() => db.fieldActivities.toArray(), []) || [];
 
-  const totalSales = sales.reduce((sum, s) => sum + s.totalAmount, 0);
+  const totalSales = sales.reduce((sum, s) => sum + (s.totalAmount || s.grossAmount || 0), 0);
   const totalExpenses =
-    expenses.reduce((sum, e) => sum + e.amount, 0) +
+    expenses.reduce((sum, e) => sum + (e.amount || 0), 0) +
     activities.reduce((sum, a) => sum + (a.cost || 0), 0);
   const netIncome = totalSales - totalExpenses;
 
@@ -22,25 +22,25 @@ export default function FarmerLedgerPage() {
     ...sales.map((s) => ({
       id: s.localId,
       type: "SALE" as const,
-      title: `Sold ${s.crop} (${s.weightKg} kg)`,
-      amount: s.totalAmount,
-      date: s.soldAt,
+      title: `Sold ${s.crop || "Produce"} (${s.weightKg || 0} kg)`,
+      amount: Number(s.totalAmount ?? s.grossAmount ?? (s.weightKg && s.pricePerKg ? s.weightKg * s.pricePerKg : 0)) || 0,
+      date: s.soldAt || s.createdAt || new Date().toISOString().split("T")[0],
     })),
     ...expenses.map((e) => ({
       id: e.localId,
       type: "EXPENSE" as const,
-      title: `${e.category}: ${e.description}`,
-      amount: e.amount,
-      date: e.date,
+      title: `${e.category}: ${e.description || "Farm Expense"}`,
+      amount: Number(e.amount) || 0,
+      date: e.date || e.createdAt || new Date().toISOString().split("T")[0],
     })),
     ...activities
-      .filter((a) => a.cost > 0)
+      .filter((a) => (a.cost || 0) > 0)
       .map((a) => ({
         id: a.localId,
         type: "EXPENSE" as const,
-        title: `Activity (${a.activityType}): ${a.description}`,
-        amount: a.cost,
-        date: a.loggedAt,
+        title: `Activity (${a.activityType}): ${a.description || "Farm Activity"}`,
+        amount: Number(a.cost) || 0,
+        date: a.loggedAt || a.createdAt || new Date().toISOString().split("T")[0],
       })),
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -119,7 +119,7 @@ export default function FarmerLedgerPage() {
                       tx.type === "SALE" ? "text-emerald-600" : "text-rose-600"
                     }`}
                   >
-                    {tx.type === "SALE" ? "+" : "-"}₱{tx.amount.toLocaleString()}
+                    {tx.type === "SALE" ? "+" : "-"}₱{(tx.amount ?? 0).toLocaleString()}
                   </span>
                 </div>
               ))}

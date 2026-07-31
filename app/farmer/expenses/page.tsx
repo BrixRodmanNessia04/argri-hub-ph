@@ -148,7 +148,7 @@ export default function FarmerExpensesPage() {
                   </div>
                   <div className="text-right flex items-center gap-3">
                     <span className="font-extrabold text-base text-rose-600">
-                      -₱{e.amount.toLocaleString()}
+                      -₱{(e.amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                     <button
                       onClick={() => handleDelete(e.localId)}

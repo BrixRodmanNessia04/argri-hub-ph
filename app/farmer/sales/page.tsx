@@ -45,33 +45,33 @@ export default function FarmerSalesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 pb-20">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] pb-24">
       <FarmerSubNav />
 
-      <main className="max-w-4xl mx-auto p-4 space-y-6 mt-2">
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+      <main className="max-w-4xl mx-auto px-3 sm:px-4 py-4 space-y-5 mt-2">
+        <div className="bg-white border border-[#dce9df] rounded-2xl p-4 sm:p-5 shadow-xs">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-amber-600" />
-              <h1 className="text-xl font-extrabold text-slate-900">
+              <DollarSign className="w-5 h-5 text-[#059669]" />
+              <h1 className="text-lg sm:text-xl font-extrabold text-[#163025]">
                 Direct Sales Log (Benta ng Ani)
               </h1>
             </div>
 
             <Link
               href="/farmer/sales/new"
-              className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md flex items-center gap-1 shrink-0"
+              className="px-3.5 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs shadow-md flex items-center gap-1 shrink-0 transition-colors"
             >
               <Plus className="w-4 h-4" /> Full Sale Log
             </Link>
           </div>
 
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-[#5f7469]">
             Log crop revenue sold to local traders, markets, or direct consumers offline.
           </p>
 
           {feedback && (
-            <div className="mt-4 p-3 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-2">
+            <div className="mt-4 p-3 rounded-xl bg-[#ecfdf5] border border-[#a7f3d0] text-[#047857] text-xs font-bold flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4" />
               <span>{feedback}</span>
             </div>
@@ -87,7 +87,7 @@ export default function FarmerSalesPage() {
                 value={buyerName}
                 onChange={(e) => setBuyerName(e.target.value)}
                 placeholder="e.g. Trader La Trinidad"
-                className="w-full p-3 rounded-xl bg-slate-50 border border-gray-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-sm font-semibold text-[#163025] placeholder:text-[#9db5a5] focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669]"
                 required
               />
             </div>
@@ -101,7 +101,7 @@ export default function FarmerSalesPage() {
                 value={crop}
                 onChange={(e) => setCrop(e.target.value)}
                 placeholder="e.g. Benguet Cabbage"
-                className="w-full p-3 rounded-xl bg-slate-50 border border-gray-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-sm font-semibold text-[#163025] placeholder:text-[#9db5a5] focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669]"
                 required
               />
             </div>
@@ -115,7 +115,7 @@ export default function FarmerSalesPage() {
                 value={weightKg}
                 onChange={(e) => setWeightKg(e.target.value)}
                 placeholder="e.g. 100"
-                className="w-full p-3 rounded-xl bg-slate-50 border border-gray-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-sm font-semibold text-[#163025] placeholder:text-[#9db5a5] focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669]"
                 required
               />
             </div>
@@ -129,7 +129,7 @@ export default function FarmerSalesPage() {
                 value={pricePerKg}
                 onChange={(e) => setPricePerKg(e.target.value)}
                 placeholder="e.g. 45"
-                className="w-full p-3 rounded-xl bg-slate-50 border border-gray-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-sm font-semibold text-[#163025] placeholder:text-[#9db5a5] focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669]"
                 required
               />
             </div>
@@ -137,7 +137,7 @@ export default function FarmerSalesPage() {
             <div className="sm:col-span-2 pt-2">
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-[#059669] hover:bg-[#047857] active:bg-[#065f46] text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 <span>
@@ -150,12 +150,12 @@ export default function FarmerSalesPage() {
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-sm font-bold text-slate-800">
+          <h2 className="text-sm font-extrabold text-[#163025]">
             Recorded Sales Revenue ({sales.length})
           </h2>
 
           {sales.length === 0 ? (
-            <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-8 text-center text-xs text-slate-500">
+            <div className="bg-white border border-dashed border-[#dce9df] rounded-2xl p-8 text-center text-xs text-[#5f7469]">
               No sales logged yet. Use the form above to record a sale.
             </div>
           ) : (
@@ -163,33 +163,33 @@ export default function FarmerSalesPage() {
               {sales.map((s) => (
                 <div
                   key={s.localId}
-                  className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex items-center justify-between"
+                  className="bg-white border border-[#dce9df] rounded-2xl p-4 shadow-xs flex items-center justify-between hover:border-[#059669]/60 transition-all"
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#ecfdf5] text-[#047857] text-[11px] font-bold">
                         {s.buyerName}
                       </span>
-                      <span className="text-xs text-slate-400">{s.soldAt}</span>
+                      <span className="text-xs text-[#9db5a5]">{s.soldAt}</span>
                     </div>
-                    <h3 className="font-bold text-sm text-slate-900 mt-1">
+                    <h3 className="font-bold text-sm text-[#163025] mt-1">
                       {s.weightKg} kg {s.crop} @ ₱{s.pricePerKg}/kg
                     </h3>
                   </div>
 
                   <div className="text-right flex items-center gap-3">
-                    <span className="font-extrabold text-base text-emerald-600">
-                      +₱{s.totalAmount.toLocaleString()}
+                    <span className="font-extrabold text-base text-[#059669] tabular-nums">
+                      +₱{(s.totalAmount ?? 0).toLocaleString()}
                     </span>
                     <Link
                       href={`/farmer/sales/${s.localId}`}
-                      className="text-slate-400 hover:text-slate-600 p-1"
+                      className="text-[#9db5a5] hover:text-[#163025] p-1 transition-colors"
                     >
                       <Eye className="w-4 h-4" />
                     </Link>
                     <button
                       onClick={() => handleDelete(s.localId)}
-                      className="text-slate-400 hover:text-red-600 p-1"
+                      className="text-[#9db5a5] hover:text-red-600 p-1 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

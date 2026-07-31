@@ -10,7 +10,7 @@ export default function CoopLayout({ children }: { children: React.ReactNode }) 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] font-sans flex flex-col">
       {/* Top Header */}
       <CoopHeader onOpenDrawer={() => setIsDrawerOpen(true)} />
 

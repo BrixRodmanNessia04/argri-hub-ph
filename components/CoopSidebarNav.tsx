@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAppRoute } from "@/lib/navigation";
 import {
   Building2,
   LayoutDashboard,
@@ -27,6 +28,7 @@ import {
 
 export default function CoopSidebarNav() {
   const pathname = usePathname();
+  const buildRoute = useAppRoute();
 
   const links = [
     { href: "/coop/dashboard", label: "Dashboard Overview", icon: LayoutDashboard },
@@ -50,43 +52,40 @@ export default function CoopSidebarNav() {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 hidden lg:flex flex-col justify-between p-5 shrink-0 min-h-[calc(100vh-57px)] sticky top-[57px]">
+    <aside className="w-64 bg-white border-r border-[#dce9df] hidden lg:flex flex-col justify-between p-5 shrink-0 min-h-[calc(100vh-57px)] sticky top-[57px]">
       <div className="space-y-6">
-        <div className="flex items-center gap-2.5 pb-4 border-b border-slate-800">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md">
+        <div className="flex items-center gap-2.5 pb-4 border-b border-[#dce9df]">
+          <div className="p-2 rounded-xl bg-[#059669] text-white shadow-xs">
             <Building2 className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="font-extrabold text-sm text-white">Benguet Farmers Coop</h2>
-            <p className="text-[11px] text-teal-400 font-semibold">Coop Leader Portal</p>
+            <h2 className="font-extrabold text-sm text-[#163025]">Benguet Farmers Coop</h2>
+            <p className="text-[11px] font-semibold text-[#059669]">Coop Manager Portal</p>
           </div>
         </div>
 
-        <nav className="space-y-1 max-h-[calc(100vh-220px)] overflow-y-auto pr-1 scrollbar-none">
-          {links.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
+        <nav className="space-y-1">
+          {links.map((link) => {
+            const Icon = link.icon;
+            const targetRoute = buildRoute(link.href);
+            const isActive = pathname === targetRoute || pathname === link.href;
+
             return (
               <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-all ${
+                key={link.href}
+                href={targetRoute}
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                   isActive
-                    ? "bg-teal-500/15 text-teal-300 border border-teal-500/30 font-bold"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                    ? "bg-[#059669] text-white shadow-xs"
+                    : "text-[#5f7469] hover:bg-[#f6fbf7] hover:text-[#163025]"
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-teal-400" : "text-slate-400"}`} />
-                <span className="truncate">{item.label}</span>
+                <Icon className="w-4 h-4 shrink-0" />
+                <span className="truncate">{link.label}</span>
               </Link>
             );
           })}
         </nav>
-      </div>
-
-      <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs">
-        <p className="text-slate-400 text-[11px]">Active Members</p>
-        <p className="text-base font-extrabold text-white">24 Registered Farmers</p>
       </div>
     </aside>
   );

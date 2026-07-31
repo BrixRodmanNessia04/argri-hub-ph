@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { resetDemoDatabase } from "@/lib/demoDb";
+import { resetProductionDatabase } from "@/lib/db";
 import {
   Sprout,
   RefreshCw,
@@ -12,7 +13,6 @@ import {
   ChevronDown,
   Menu,
   X,
-  CheckCircle2,
   Fish,
   Building2,
   Store,
@@ -45,12 +45,13 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
   const handleReset = async () => {
     setResetting(true);
     await resetDemoDatabase();
+    await resetProductionDatabase();
     setResetting(false);
     setFeedback("Demo data reset to original state!");
     setTimeout(() => {
       setFeedback(null);
       window.location.reload();
-    }, 1200);
+    }, 1000);
   };
 
   return (
@@ -60,9 +61,9 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 font-extrabold">
             <span className="px-2 py-0.5 rounded-md bg-[#059669] text-white text-[10px] uppercase font-black tracking-wider">
-              DEMO MODE
+              DEMO MODE — FULL FEATURE REUSE
             </span>
-            <span>Sample data workspace. Actions do not modify production databases.</span>
+            <span>Isolated fictional data. Actions do not write to production servers.</span>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 text-[11px] font-bold">
@@ -72,7 +73,7 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
               className="px-2.5 py-0.5 rounded-lg bg-white border border-[#a7f3d0] text-[#047857] hover:bg-[#d1fae5] flex items-center gap-1 transition-all"
             >
               <RefreshCw className={`w-3 h-3 ${resetting ? "animate-spin" : ""}`} />
-              <span>Reset Demo</span>
+              <span>Reset Demo Data</span>
             </button>
             <Link href="/register" className="text-[#059669] hover:underline font-extrabold">
               Create Real Account
@@ -138,7 +139,7 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
             className="px-3 py-1.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] hover:bg-[#ecfdf5] text-xs font-bold flex items-center gap-1.5"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-[#059669] ${resetting ? "animate-spin" : ""}`} />
-            <span>Reset Data</span>
+            <span>Reset Demo Data</span>
           </button>
 
           <Link

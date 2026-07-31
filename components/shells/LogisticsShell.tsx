@@ -2,35 +2,52 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Truck, MapPin, ShieldCheck, Menu, X } from "lucide-react";
+import { useAppRoute } from "@/lib/navigation";
+import { Truck, MapPin, Thermometer, ShieldCheck, User, Menu } from "lucide-react";
 
 export default function LogisticsShell({ children }: { children: React.ReactNode }) {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const buildRoute = useAppRoute();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      <header className="h-16 bg-slate-900 border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] flex flex-col font-sans">
+      <header className="h-16 bg-white border-b border-[#dce9df] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 shadow-xs">
         <div className="flex items-center gap-3">
-          <button onClick={() => setDrawerOpen(true)} className="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-200">
-            <Menu className="w-5 h-5" />
-          </button>
-          <Link href="/logistics" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
+          <Link href={buildRoute("/logistics")} className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-[#059669] text-white flex items-center justify-center font-bold">
               <Truck className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-extrabold text-sm text-white tracking-wide block">AgriHub PH</span>
-              <span className="text-[10px] font-bold text-blue-400 block -mt-1">Cold-Chain &amp; Fleet Logistics</span>
+              <span className="font-extrabold text-sm text-[#163025] block">AgriHub PH</span>
+              <span className="text-[10px] font-bold text-[#059669] block -mt-1">Cold-Chain Fleet Logistics</span>
             </div>
           </Link>
         </div>
 
-        <span className="px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-400 border border-blue-800 text-[10px] font-extrabold">
-          LOGISTICS PORTAL
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0] text-[10px] font-extrabold">
+            REEFER FLEET (4°C LOGGED)
+          </span>
+          <Link href={buildRoute("/farmer/profile")} className="p-2 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025]">
+            <User className="w-4 h-4" />
+          </Link>
+        </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 lg:pb-8">{children}</main>
+      <div className="flex-1 flex">
+        <aside className="w-64 bg-white border-r border-[#dce9df] hidden lg:flex flex-col p-5 shrink-0 min-h-[calc(100vh-64px)] sticky top-16">
+          <div className="space-y-4">
+            <h2 className="text-[10px] uppercase font-black text-[#059669] tracking-wider">Logistics Dispatch</h2>
+            <nav className="space-y-1">
+              <Link href={buildRoute("/logistics")} className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-[#059669] text-white shadow-xs">
+                <Truck className="w-4 h-4 shrink-0" />
+                <span>Fleet Dashboard</span>
+              </Link>
+            </nav>
+          </div>
+        </aside>
+
+        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">{children}</main>
+      </div>
     </div>
   );
 }

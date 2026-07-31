@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAppRoute } from "@/lib/navigation";
 import {
   LayoutDashboard,
   Building2,
@@ -27,15 +28,10 @@ import QuickAddModal from "./QuickAddModal";
 
 export default function FarmerBottomNav() {
   const pathname = usePathname();
+  const buildRoute = useAppRoute();
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
-  // Requirement 3: Primary 5 bottom navigation items:
-  // 1. Dashboard -> /farmer
-  // 2. Farms -> /farmer/farms
-  // 3. Add Log -> open quick-add bottom sheet
-  // 4. Warehouse -> /farmer/warehouse
-  // 5. More -> open Farmer menu
   const mainTabs = [
     { href: "/farmer", label: "Dashboard", icon: LayoutDashboard },
     { href: "/farmer/farms", label: "Farms", icon: Building2 },
@@ -44,8 +40,6 @@ export default function FarmerBottomNav() {
     { label: "More", icon: Grid, isMore: true },
   ];
 
-  // Requirement 3: More menu items:
-  // Logs, Plots, Crop cycles, Ledger, Calendar, Sync status, Profile, Settings, Cooperative
   const moreMenuItems = [
     { href: "/farmer/logs", label: "Logs", icon: FileText },
     { href: "/farmer/plots", label: "Plots", icon: MapPin },
@@ -58,71 +52,70 @@ export default function FarmerBottomNav() {
     { href: "/farmer/cooperative", label: "Cooperative", icon: Users },
     { href: "/farmer/tasks", label: "Tasks", icon: CheckSquare },
     { href: "/farmer/reports", label: "Reports", icon: BarChart3 },
-    { href: "/farmer/help", label: "Help", icon: HelpCircle },
+    { href: "/farmer/help", label: "Help Center", icon: HelpCircle },
   ];
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg px-2 py-1.5 flex items-center justify-around">
-        {mainTabs.map((tab, idx) => {
-          const Icon = tab.icon;
+      {/* Fixed Bottom Navigation Bar */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-lg px-2 py-1.5">
+        <div className="max-w-md mx-auto flex items-center justify-between">
+          {mainTabs.map((tab, idx) => {
+            const Icon = tab.icon;
 
-          if (tab.isAdd) {
-            return (
-              <button
-                key={idx}
-                onClick={() => setIsQuickAddOpen(true)}
-                className="flex flex-col items-center justify-center p-1 text-emerald-600 focus:outline-none"
-              >
-                <div className="p-2 rounded-full bg-emerald-600 text-white shadow-md hover:bg-emerald-700 transition-all">
+            if (tab.isAdd) {
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setIsQuickAddOpen(true)}
+                  className="flex flex-col items-center justify-center text-emerald-600 hover:text-emerald-700 active:scale-95 transition-transform"
+                >
+                  <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md -mt-3 border-2 border-white">
+                    <PlusCircle className="w-6 h-6" />
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-700 mt-0.5">{tab.label}</span>
+                </button>
+              );
+            }
+
+            if (tab.isMore) {
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setIsMoreMenuOpen(true)}
+                  className="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-slate-500 hover:text-slate-900 transition-colors"
+                >
                   <Icon className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] font-bold mt-0.5">{tab.label}</span>
-              </button>
-            );
-          }
+                  <span className="text-[10px] font-medium mt-0.5">{tab.label}</span>
+                </button>
+              );
+            }
 
-          if (tab.isMore) {
+            const targetRoute = buildRoute(tab.href!);
+            const isActive = pathname === targetRoute || pathname === tab.href;
+
             return (
-              <button
+              <Link
                 key={idx}
-                onClick={() => setIsMoreMenuOpen(true)}
-                className={`flex flex-col items-center justify-center p-1 transition-colors ${
-                  isMoreMenuOpen ? "text-emerald-700 font-extrabold" : "text-slate-500 hover:text-slate-900"
+                href={targetRoute}
+                className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors ${
+                  isActive ? "text-emerald-600 font-bold" : "text-slate-500 hover:text-slate-900 font-medium"
                 }`}
               >
                 <Icon className="w-5 h-5" />
-                <span className="text-[10px] font-semibold mt-0.5">{tab.label}</span>
-              </button>
+                <span className="text-[10px] mt-0.5">{tab.label}</span>
+              </Link>
             );
-          }
-
-          const isActive = pathname === tab.href || (tab.href !== "/farmer" && pathname?.startsWith(tab.href || ""));
-
-          return (
-            <Link
-              key={idx}
-              href={tab.href || "/farmer"}
-              className={`flex flex-col items-center justify-center p-1 transition-colors ${
-                isActive ? "text-emerald-700 font-extrabold" : "text-slate-500 hover:text-slate-900"
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="text-[10px] font-semibold mt-0.5">{tab.label}</span>
-            </Link>
-          );
-        })}
+          })}
+        </div>
       </nav>
 
-      <QuickAddModal isOpen={isQuickAddOpen} onClose={() => setIsQuickAddOpen(false)} />
-
+      {/* Slide-Up "More" Menu Modal */}
       {isMoreMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-end justify-center p-0">
-          <div className="w-full max-w-lg bg-white rounded-t-3xl p-5 space-y-4 max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 backdrop-blur-xs md:hidden">
+          <div className="w-full bg-white rounded-t-3xl p-5 space-y-4 shadow-2xl max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h2 className="text-base font-extrabold text-slate-900">
-                Farmer Navigation Menu
-              </h2>
+              <span className="font-extrabold text-slate-900 text-sm">Farmer Menu</span>
               <button
                 onClick={() => setIsMoreMenuOpen(false)}
                 className="p-1.5 rounded-full hover:bg-gray-100 text-slate-500"
@@ -132,22 +125,24 @@ export default function FarmerBottomNav() {
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              {moreMenuItems.map((item) => {
+              {moreMenuItems.map((item, idx) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href || (item.href !== "/farmer" && pathname?.startsWith(item.href));
+                const targetRoute = buildRoute(item.href);
+                const isActive = pathname === targetRoute || pathname === item.href;
+
                 return (
                   <Link
-                    key={item.href}
-                    href={item.href}
+                    key={idx}
+                    href={targetRoute}
                     onClick={() => setIsMoreMenuOpen(false)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition-all ${
+                    className={`flex flex-col items-center p-3 rounded-2xl border text-center transition-all ${
                       isActive
-                        ? "bg-emerald-50 border-emerald-500 text-emerald-800 font-bold"
-                        : "bg-slate-50 border-gray-200 text-slate-700 hover:bg-gray-100"
+                        ? "bg-emerald-50 border-emerald-300 text-emerald-700 font-extrabold shadow-xs"
+                        : "bg-slate-50 border-gray-200 text-slate-700 hover:bg-slate-100 font-medium"
                     }`}
                   >
-                    <Icon className="w-5 h-5 mb-1 text-emerald-600" />
-                    <span className="text-xs font-bold leading-tight">{item.label}</span>
+                    <Icon className="w-5 h-5 mb-1.5 text-emerald-600" />
+                    <span className="text-[11px] leading-tight truncate w-full">{item.label}</span>
                   </Link>
                 );
               })}
@@ -155,6 +150,9 @@ export default function FarmerBottomNav() {
           </div>
         </div>
       )}
+
+      {/* Quick Add Log Modal */}
+      <QuickAddModal isOpen={isQuickAddOpen} onClose={() => setIsQuickAddOpen(false)} />
     </>
   );
 }

@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAppRoute } from "@/lib/navigation";
 import {
   ShieldCheck,
   LayoutDashboard,
@@ -21,6 +22,7 @@ import {
 
 export default function AdminSidebarNav() {
   const pathname = usePathname();
+  const buildRoute = useAppRoute();
 
   const links = [
     { href: "/admin", label: "System Overview", icon: LayoutDashboard },
@@ -39,33 +41,35 @@ export default function AdminSidebarNav() {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 hidden lg:flex flex-col justify-between p-5 shrink-0 min-h-[calc(100vh-57px)] sticky top-[57px]">
+    <aside className="w-64 bg-white border-r border-[#dce9df] hidden lg:flex flex-col justify-between p-5 shrink-0 min-h-[calc(100vh-57px)] sticky top-[57px]">
       <div className="space-y-6">
-        <div className="flex items-center gap-2.5 pb-4 border-b border-slate-800">
-          <div className="p-2 rounded-xl bg-purple-500/15 text-purple-400 border border-purple-500/30">
+        <div className="flex items-center gap-2.5 pb-4 border-b border-[#dce9df]">
+          <div className="p-2 rounded-xl bg-[#ecfdf5] text-[#059669] border border-[#a7f3d0]">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="font-extrabold text-sm text-white">Platform Governance</h2>
-            <p className="text-[11px] text-purple-400 font-semibold">Super Admin Portal</p>
+            <h2 className="font-extrabold text-sm text-[#163025]">Platform Governance</h2>
+            <p className="text-[11px] text-[#059669] font-semibold">Super Admin Portal</p>
           </div>
         </div>
 
-        <nav className="space-y-1 max-h-[calc(100vh-220px)] overflow-y-auto pr-1 scrollbar-none">
+        <nav className="space-y-1 max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
           {links.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const targetRoute = buildRoute(item.href);
+            const isActive = pathname === targetRoute || pathname === item.href;
+
             return (
               <Link
                 key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-all ${
+                href={targetRoute}
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                   isActive
-                    ? "bg-purple-500/15 text-purple-300 border border-purple-500/30 font-bold"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                    ? "bg-[#059669] text-white shadow-xs"
+                    : "text-[#5f7469] hover:bg-[#f6fbf7] hover:text-[#163025]"
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-purple-400" : "text-slate-400"}`} />
+                <Icon className="w-4 h-4 shrink-0" />
                 <span className="truncate">{item.label}</span>
               </Link>
             );

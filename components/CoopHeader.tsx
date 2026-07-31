@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAppRoute } from "@/lib/navigation";
 import { Menu, Building2, Bot, User, Bell, Sparkles } from "lucide-react";
 
 interface CoopHeaderProps {
@@ -11,6 +12,7 @@ interface CoopHeaderProps {
 
 export default function CoopHeader({ onOpenDrawer }: CoopHeaderProps) {
   const pathname = usePathname();
+  const buildRoute = useAppRoute();
 
   const getPageTitle = (path: string) => {
     if (path.includes("/coop/farmers")) return "Member Farmers";
@@ -29,49 +31,49 @@ export default function CoopHeader({ onOpenDrawer }: CoopHeaderProps) {
   };
 
   return (
-    <header className="bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-30 shadow-md">
+    <header className="bg-white border-b border-[#dce9df] px-4 py-3 sticky top-0 z-30 shadow-xs">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Left: Mobile Hamburger & Page Title */}
         <div className="flex items-center gap-3">
           <button
             onClick={onOpenDrawer}
-            className="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700"
+            className="lg:hidden p-2 rounded-xl bg-[#f6fbf7] text-[#163025] border border-[#dce9df] hover:bg-[#ecfdf5]"
             aria-label="Open navigation menu"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           <div className="flex items-center gap-2.5">
-            <div className="hidden sm:flex p-2 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-sm">
+            <div className="hidden sm:flex p-2 rounded-xl bg-[#059669] text-white shadow-xs">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="font-extrabold text-sm sm:text-base text-white tracking-tight">
+              <h1 className="font-extrabold text-sm sm:text-base text-[#163025] tracking-tight">
                 {getPageTitle(pathname)}
               </h1>
-              <p className="text-[11px] font-semibold text-teal-400">
+              <p className="text-[11px] font-semibold text-[#059669]">
                 Benguet Farmers Cooperative
               </p>
             </div>
           </div>
         </div>
 
-        {/* Right: Quick Actions (AI Assistant, Profile Avatar) */}
+        {/* Right: Quick Actions */}
         <div className="flex items-center gap-2">
           <Link
-            href="/coop/ai"
-            className="px-3 py-1.5 rounded-xl bg-teal-500/15 hover:bg-teal-500/25 border border-teal-500/30 text-teal-300 text-xs font-bold flex items-center gap-1.5 transition-all"
+            href={buildRoute("/coop/ai")}
+            className="px-3 py-1.5 rounded-xl bg-[#ecfdf5] hover:bg-[#d1fae5] border border-[#a7f3d0] text-[#047857] text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-xs"
           >
-            <Sparkles className="w-4 h-4 text-teal-400" />
-            <span className="hidden sm:inline">AI Operations</span>
+            <Sparkles className="w-3.5 h-3.5 text-[#059669]" />
+            <span className="hidden sm:inline">AI Assistant</span>
           </Link>
 
           <Link
-            href="/coop/profile"
-            className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center gap-2 text-xs font-bold border border-slate-700"
+            href={buildRoute("/coop/profile")}
+            className="p-2 rounded-xl bg-[#f6fbf7] hover:bg-[#ecfdf5] border border-[#dce9df] text-[#163025] transition-all"
+            aria-label="Coop Profile"
           >
-            <User className="w-4 h-4 text-teal-400" />
-            <span className="hidden md:inline">Elena Santos</span>
+            <User className="w-4 h-4" />
           </Link>
         </div>
       </div>

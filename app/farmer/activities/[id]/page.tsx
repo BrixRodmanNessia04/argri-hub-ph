@@ -71,7 +71,7 @@ export default function FieldActivityDetailPage({ params }: { params: Promise<{ 
             <div className="p-3.5 rounded-xl bg-slate-50 border border-gray-200">
               <span className="text-slate-400 font-medium">Cost:</span>
               <p className="font-extrabold text-rose-600 text-base mt-0.5">
-                ₱{activity.cost.toLocaleString()}
+                ₱{(activity.cost ?? 0).toLocaleString()}
               </p>
             </div>
             <div className="p-3.5 rounded-xl bg-slate-50 border border-gray-200">

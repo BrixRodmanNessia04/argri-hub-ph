@@ -461,7 +461,7 @@ export async function getUnifiedFarmerLogs(): Promise<UnifiedLogItem[]> {
       plotId: act.plotId,
       cropCycleId: act.cropCycleId,
       summary: act.description,
-      amountOrQty: act.cost > 0 ? `₱${act.cost.toLocaleString()}` : undefined,
+      amountOrQty: (act.cost ?? 0) > 0 ? `₱${(act.cost ?? 0).toLocaleString()}` : undefined,
       syncStatus: act.syncStatus,
       editUrl: `/farmer/activities/${act.localId}/edit`,
       viewUrl: `/farmer/activities/${act.localId}`,
@@ -480,7 +480,7 @@ export async function getUnifiedFarmerLogs(): Promise<UnifiedLogItem[]> {
       plotId: exp.plotId,
       cropCycleId: exp.cropCycleId,
       summary: exp.description,
-      amountOrQty: `-₱${exp.amount.toLocaleString()}`,
+      amountOrQty: `-₱${(exp.amount ?? 0).toLocaleString()}`,
       syncStatus: exp.syncStatus,
       editUrl: `/farmer/expenses/${exp.localId}/edit`,
       viewUrl: `/farmer/expenses/${exp.localId}`,
@@ -517,7 +517,7 @@ export async function getUnifiedFarmerLogs(): Promise<UnifiedLogItem[]> {
       farmId: s.farmId,
       cropCycleId: s.cropCycleId,
       summary: `${s.weightKg} kg ${s.crop} @ ₱${s.pricePerKg}/kg`,
-      amountOrQty: `+₱${s.totalAmount.toLocaleString()}`,
+      amountOrQty: `+₱${(s.totalAmount ?? 0).toLocaleString()}`,
       syncStatus: s.syncStatus,
       editUrl: `/farmer/sales/${s.localId}/edit`,
       viewUrl: `/farmer/sales/${s.localId}`,
@@ -573,7 +573,7 @@ export async function getUnifiedFarmerLogs(): Promise<UnifiedLogItem[]> {
       plotId: l.plotId,
       cropCycleId: l.cropCycleId,
       summary: `${l.workerCount} workers (${l.workerGroup})`,
-      amountOrQty: `-₱${l.totalCost.toLocaleString()}`,
+      amountOrQty: `-₱${(l.totalCost ?? 0).toLocaleString()}`,
       syncStatus: l.syncStatus,
       editUrl: `/farmer/labor/${l.localId}/edit`,
       viewUrl: `/farmer/labor/${l.localId}`,
@@ -592,7 +592,7 @@ export async function getUnifiedFarmerLogs(): Promise<UnifiedLogItem[]> {
       plotId: eq.plotId,
       cropCycleId: eq.cropCycleId,
       summary: eq.activityDescription,
-      amountOrQty: eq.cost > 0 ? `-₱${eq.cost.toLocaleString()}` : undefined,
+      amountOrQty: (eq.cost ?? 0) > 0 ? `-₱${(eq.cost ?? 0).toLocaleString()}` : undefined,
       syncStatus: eq.syncStatus,
       editUrl: `/farmer/equipment/${eq.equipmentId}/edit`,
       viewUrl: `/farmer/equipment/${eq.equipmentId}`,
@@ -611,7 +611,7 @@ export async function getUnifiedFarmerLogs(): Promise<UnifiedLogItem[]> {
       plotId: g.plotId,
       cropCycleId: g.cropCycleId,
       summary: g.notes,
-      amountOrQty: g.cost ? `₱${g.cost.toLocaleString()}` : undefined,
+      amountOrQty: g.cost ? `₱${(g.cost ?? 0).toLocaleString()}` : undefined,
       syncStatus: g.syncStatus,
       editUrl: `/farmer/logs/${g.localId}/edit`,
       viewUrl: `/farmer/logs/${g.localId}`,
@@ -774,3 +774,83 @@ export async function getAvailableInventoryItems(params?: {
 
   return items;
 }
+
+// ---- NORMALIZED DASHBOARD LEDGER TRANSACTIONS ----
+
+export type LedgerTransactionType =
+  | "SALE"
+  | "EXPENSE"
+  | "INVENTORY_USAGE"
+  | "LABOR"
+  | "EQUIPMENT"
+  | "OTHER_INCOME"
+  | "OTHER_COST";
+
+export interface DashboardLedgerTransaction {
+  id: string;
+  type: LedgerTransactionType;
+  label: string;
+  amount: number;
+  transactionDate: string;
+  relatedRoute?: string | null;
+  syncStatus?: string | null;
+}
+
+export function normalizeSaleToTransaction(sale: SaleEntity): DashboardLedgerTransaction {
+  const amount = Number(
+    sale.totalAmount ?? sale.grossAmount ?? (sale.weightKg && sale.pricePerKg ? sale.weightKg * sale.pricePerKg : 0)
+  ) || 0;
+
+  return {
+    id: sale.localId,
+    type: "SALE",
+    label: `Sold ${sale.weightKg || 0}kg ${sale.crop || "Produce"}`,
+    amount,
+    transactionDate: sale.soldAt || sale.createdAt || new Date().toISOString().split("T")[0],
+    relatedRoute: `/farmer/sales/${sale.localId}`,
+    syncStatus: sale.syncStatus,
+  };
+}
+
+export function normalizeExpenseToTransaction(expense: ExpenseEntity): DashboardLedgerTransaction {
+  const amount = Number(expense.amount) || 0;
+
+  return {
+    id: expense.localId,
+    type: "EXPENSE",
+    label: expense.description || `${expense.category} Expense`,
+    amount,
+    transactionDate: expense.date || expense.createdAt || new Date().toISOString().split("T")[0],
+    relatedRoute: `/farmer/expenses/${expense.localId}`,
+    syncStatus: expense.syncStatus,
+  };
+}
+
+export function normalizeLaborToTransaction(labor: LaborLogEntity): DashboardLedgerTransaction {
+  const amount = Number(labor.totalCost) || 0;
+
+  return {
+    id: labor.localId,
+    type: "LABOR",
+    label: `Labor: ${labor.workerGroup || labor.workType || "Farm Worker"}`,
+    amount,
+    transactionDate: labor.date || labor.createdAt || new Date().toISOString().split("T")[0],
+    relatedRoute: `/farmer/labor`,
+    syncStatus: labor.syncStatus,
+  };
+}
+
+export function normalizeInventoryUsageToTransaction(tx: InventoryTransactionEntity, itemName?: string): DashboardLedgerTransaction {
+  const amount = Number(tx.totalCost ?? (tx.quantityKg && tx.unitCost ? tx.quantityKg * tx.unitCost : 0)) || 0;
+
+  return {
+    id: tx.localId,
+    type: "INVENTORY_USAGE",
+    label: `Usage: ${itemName || "Inventory Item"} (${tx.quantityKg || 0} kg)`,
+    amount,
+    transactionDate: tx.date || tx.createdAt || new Date().toISOString().split("T")[0],
+    relatedRoute: `/farmer/inventory`,
+    syncStatus: tx.syncStatus,
+  };
+}
+
