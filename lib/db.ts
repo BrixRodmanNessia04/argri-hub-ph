@@ -153,6 +153,7 @@ export interface InventoryItemEntity extends OfflineBaseEntity {
   reorderThreshold?: number;
   minStockLevel?: number;
   expiryDate?: string;
+  fisheriesUse?: boolean;
 }
 
 export type InventoryTransactionType =
@@ -332,7 +333,7 @@ export interface SmsQueueEntity {
 
 export interface MediaQueueEntity {
   localId: string;
-  entityType: 'HARVEST' | 'ACTIVITY' | 'FARM' | 'PEST_DISEASE';
+  entityType: 'HARVEST' | 'ACTIVITY' | 'FARM' | 'PEST_DISEASE' | 'DOCUMENT';
   entityLocalId: string;
   fileName: string;
   fileType: string;
@@ -860,7 +861,10 @@ export function getDeviceId(): string {
   return devId;
 }
 
-export function createBaseEntity(userId: string = 'farmer-123', coopId: string = 'coop-456'): OfflineBaseEntity {
+export function createBaseEntity(
+  userId: string = 'farmer-123',
+  coopId: string | null = 'coop-456',
+): OfflineBaseEntity {
   const now = new Date().toISOString();
   return {
     localId: generateLocalId(),
@@ -964,5 +968,3 @@ export async function resetProductionDatabase() {
 }
 
 export { db };
-
-

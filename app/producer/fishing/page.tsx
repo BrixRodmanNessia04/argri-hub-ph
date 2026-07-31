@@ -1,16 +1,57 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProducerShell from "@/components/shells/ProducerShell";
 import { useLiveQuery } from "dexie-react-hooks";
-import { db, FishingTripEntity, CatchLogEntity } from "@/lib/db";
-import { createFishingTrip, recordCatchLog } from "@/lib/productionRepository";
-import { Fish, Anchor, Plus, Save, CheckCircle2, AlertCircle, Fuel, Users, MapPin, Warehouse } from "lucide-react";
+import { db, CatchLogEntity, type DocumentEntity } from "@/lib/db";
+import { createFishingTrip, recordCatchLog, createFisheriesDocument } from "@/lib/productionRepository";
+import { demoDb } from "@/lib/demoDb";
+import { useApplicationContext } from "@/lib/ApplicationContext";
+import { hydrateFisheriesFromSupabase } from "@/lib/fisheriesSupabaseRepository";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { Fish, Anchor, Save, CheckCircle2, AlertCircle, RefreshCw, FileText } from "lucide-react";
 
 export default function FishingOperationsPage() {
-  const trips = useLiveQuery(() => db.fishingTrips.filter((t) => !t.isDeleted).toArray(), []) || [];
-  const catchLogs = useLiveQuery(() => db.catchLogs.filter((c) => !c.isDeleted).toArray(), []) || [];
-  const fuelItems = useLiveQuery(() => db.inventoryItems.filter((i) => !i.isDeleted && (i.type === "FUEL" || i.crop.toLowerCase().includes("fuel") || i.crop.toLowerCase().includes("diesel"))).toArray(), []) || [];
+  const { mode, userId, organizationId } = useApplicationContext();
+  const trips = useLiveQuery(async () => {
+    if (mode === "demo") return demoDb.demoFishingTrips.toArray();
+    return db.fishingTrips.filter((trip) => !trip.isDeleted).toArray();
+  }, [mode]) || [];
+  const catchLogs = useLiveQuery(async () => {
+    if (mode === "demo") return demoDb.demoCatches.toArray();
+    return db.catchLogs.filter((catchLog) => !catchLog.isDeleted).toArray();
+  }, [mode]) || [];
+  const fuelItems = useLiveQuery(async () => {
+    if (mode === "demo") {
+      const items = await demoDb.demoInventoryItems
+        .filter((item) => item.type === "FUEL")
+        .toArray();
+      return items.map((item) => ({
+        localId: item.localId,
+        crop: item.name,
+        quantityInKg: item.quantity,
+      }));
+    }
+    return db.inventoryItems
+      .filter((item) =>
+        !item.isDeleted &&
+        (item.type === "FUEL" ||
+          item.crop.toLowerCase().includes("fuel") ||
+          item.crop.toLowerCase().includes("diesel")))
+      .toArray();
+  }, [mode]) || [];
+  const fisheriesDocuments = useLiveQuery(async () => {
+    if (mode === "demo") return demoDb.demoFisheriesDocuments.toArray();
+    return db.documents
+      .filter(
+        (document) =>
+          !document.isDeleted &&
+          ["VESSEL_PERMIT", "LGU_PERMIT", "BFAR_LICENSE"].includes(
+            document.documentType,
+          ),
+      )
+      .toArray();
+  }, [mode]) || [];
 
   // Form states
   const [vesselName, setVesselName] = useState("FB San Jose - Marine Fishing Vessel");
@@ -29,24 +70,96 @@ export default function FishingOperationsPage() {
   const [preservationMethod, setPreservationMethod] = useState<CatchLogEntity["preservationMethod"]>("chilled_ice");
   const [forSaleKg, setForSaleKg] = useState("110");
   const [homeUseKg, setHomeUseKg] = useState("10");
+  const [documentTitle, setDocumentTitle] = useState("Municipal Fishing Permit");
+  const [documentType, setDocumentType] =
+    useState<DocumentEntity["documentType"]>("VESSEL_PERMIT");
+  const [documentFileName, setDocumentFileName] = useState("");
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
 
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [cloudError, setCloudError] = useState<string | null>(() =>
+    mode === "production" && !isSupabaseConfigured()
+      ? "Supabase is not configured. Records will stay safely queued on this device until cloud settings are added."
+      : null,
+  );
+  const [syncing, setSyncing] = useState(false);
+  const pendingFisheriesCount = useLiveQuery(async () => {
+    if (mode === "demo") return 0;
+    const [tripCount, catchCount] = await Promise.all([
+      db.fishingTrips.where("syncStatus").anyOf(["local", "pending", "failed"]).count(),
+      db.catchLogs.where("syncStatus").anyOf(["local", "pending", "failed"]).count(),
+    ]);
+    return tripCount + catchCount;
+  }, [mode]) ?? 0;
+
+  useEffect(() => {
+    if (mode !== "production") return;
+    if (!isSupabaseConfigured()) return;
+    void import("@/lib/syncEngine");
+    void hydrateFisheriesFromSupabase().catch((error: unknown) => {
+      setCloudError(
+        error instanceof Error
+          ? `Cloud refresh failed; local records remain available. ${error.message}`
+          : "Cloud refresh failed; local records remain available.",
+      );
+    });
+  }, [mode]);
+
+  const handleSync = async () => {
+    if (mode === "demo") return;
+    setSyncing(true);
+    const { syncEngine } = await import("@/lib/syncEngine");
+    const success = await syncEngine.triggerSync();
+    setSyncing(false);
+    setFeedback(
+      success
+        ? "Fisheries records synchronized with Supabase."
+        : "Sync is still pending. Your records remain safe on this device.",
+    );
+    setTimeout(() => setFeedback(null), 3500);
+  };
 
   const handleCreateTrip = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!vesselName.trim() || !fishingGround.trim()) return;
 
-    await createFishingTrip({
-      vesselName: vesselName.trim(),
-      vesselRegistrationNumber: vesselRegNum.trim(),
-      departurePort: departurePort.trim(),
-      fishingGround: fishingGround.trim(),
-      fuelUsedLiters: parseFloat(fuelUsedLiters) || 0,
-      crewCount: parseInt(crewCount) || 1,
-      fuelInventoryItemId: selectedFuelItemId || undefined,
-    });
+    if (mode === "demo") {
+      await demoDb.demoFishingTrips.add({
+        localId: `demo-trip-${crypto.randomUUID()}`,
+        vesselName: vesselName.trim(),
+        vesselRegistrationNumber: vesselRegNum.trim() || undefined,
+        departurePort: departurePort.trim(),
+        fishingGround: fishingGround.trim(),
+        fuelUsedLiters: parseFloat(fuelUsedLiters) || 0,
+        crewCount: parseInt(crewCount) || 1,
+        departedAt: new Date().toISOString().split("T")[0],
+        status: "DEPARTED",
+      });
+      if (selectedFuelItemId) {
+        const fuel = await demoDb.demoInventoryItems.get(selectedFuelItemId);
+        if (fuel) {
+          await demoDb.demoInventoryItems.update(selectedFuelItemId, {
+            quantity: Math.max(0, fuel.quantity - (parseFloat(fuelUsedLiters) || 0)),
+          });
+        }
+      }
+    } else {
+      await createFishingTrip({
+        vesselName: vesselName.trim(),
+        vesselRegistrationNumber: vesselRegNum.trim(),
+        departurePort: departurePort.trim(),
+        fishingGround: fishingGround.trim(),
+        fuelUsedLiters: parseFloat(fuelUsedLiters) || 0,
+        crewCount: parseInt(crewCount) || 1,
+        fuelInventoryItemId: selectedFuelItemId || undefined,
+        userId,
+        organizationId,
+      });
+    }
 
-    setFeedback(`Fishing trip created for ${vesselName}! Fuel deducted from warehouse.`);
+    setFeedback(
+      `Fishing trip created for ${vesselName}.${selectedFuelItemId ? " Fuel deducted from warehouse." : ""}`,
+    );
     setTimeout(() => setFeedback(null), 3500);
   };
 
@@ -54,27 +167,104 @@ export default function FishingOperationsPage() {
     e.preventDefault();
     if (!selectedTripId || !speciesName.trim()) return;
 
-    await recordCatchLog({
-      tripId: selectedTripId,
-      speciesName: speciesName.trim(),
-      weightKg: parseFloat(weightKg) || 0,
-      qualityGrade,
-      preservationMethod,
-      forSaleKg: parseFloat(forSaleKg) || 0,
-      homeUseKg: parseFloat(homeUseKg) || 0,
-    });
+    if (mode === "demo") {
+      const trip = await demoDb.demoFishingTrips.get(selectedTripId);
+      await demoDb.demoCatches.add({
+        localId: `demo-catch-${crypto.randomUUID()}`,
+        tripId: selectedTripId,
+        vesselName: trip?.vesselName ?? "Fishing vessel",
+        speciesName: speciesName.trim(),
+        weightKg: parseFloat(weightKg) || 0,
+        qualityGrade,
+        preservationMethod,
+        caughtAtDate: new Date().toISOString().split("T")[0],
+        forSaleKg: parseFloat(forSaleKg) || 0,
+        homeUseKg: parseFloat(homeUseKg) || 0,
+      });
+      const existingFish = await demoDb.demoInventoryItems
+        .filter(
+          (item) =>
+            item.type === "FISH" &&
+            item.name.toLowerCase() === speciesName.trim().toLowerCase(),
+        )
+        .first();
+      if (existingFish) {
+        await demoDb.demoInventoryItems.update(existingFish.localId, {
+          quantity:
+            existingFish.quantity + (parseFloat(forSaleKg) || parseFloat(weightKg) || 0),
+        });
+      } else {
+        await demoDb.demoInventoryItems.add({
+          localId: `demo-fish-stock-${crypto.randomUUID()}`,
+          name: speciesName.trim(),
+          type: "FISH",
+          quantity: parseFloat(forSaleKg) || parseFloat(weightKg) || 0,
+          unit: "kg",
+          unitCost: 0,
+        });
+      }
+    } else {
+      await recordCatchLog({
+        tripId: selectedTripId,
+        speciesName: speciesName.trim(),
+        weightKg: parseFloat(weightKg) || 0,
+        qualityGrade,
+        preservationMethod,
+        forSaleKg: parseFloat(forSaleKg) || 0,
+        homeUseKg: parseFloat(homeUseKg) || 0,
+        userId,
+        organizationId,
+      });
+    }
 
     setFeedback(`Catch log recorded for ${speciesName} (${weightKg} kg)! Added to fish inventory.`);
     setSpeciesName("");
     setTimeout(() => setFeedback(null), 3500);
   };
 
+  const handleSaveDocument = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!documentTitle.trim()) return;
+    if (mode === "demo") {
+      await demoDb.demoFisheriesDocuments.add({
+        localId: `demo-fish-doc-${crypto.randomUUID()}`,
+        title: documentTitle.trim(),
+        documentType,
+        fileName: documentFileName || undefined,
+        verificationStatus: "PENDING",
+      });
+    } else {
+      const savedDocument = await createFisheriesDocument({
+        title: documentTitle.trim(),
+        documentType,
+        fileName: documentFileName || undefined,
+        userId,
+        organizationId,
+      });
+      if (documentFile) {
+        await db.mediaQueue.add({
+          localId: `document-upload-${crypto.randomUUID()}`,
+          entityType: "DOCUMENT",
+          entityLocalId: savedDocument.localId,
+          fileName: documentFile.name,
+          fileType: documentFile.type || "application/octet-stream",
+          fileBlob: documentFile,
+          syncStatus: "pending",
+          createdAt: new Date().toISOString(),
+        });
+      }
+    }
+    setFeedback("Vessel document saved offline and queued for secure synchronization.");
+    setTimeout(() => setFeedback(null), 3500);
+  };
+
   return (
     <ProducerShell>
       <div className="space-y-6">
-        <div>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div>
           <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0]">
-            CAPTURE FISHERIES &amp; VESSEL OPERATIONS
+            {mode === "demo" ? "DEMO · LOCAL SANDBOX" : "CAPTURE FISHERIES & VESSEL OPERATIONS"}
           </span>
           <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight mt-1 flex items-center gap-2">
             <Fish className="w-6 h-6 text-[#059669]" />
@@ -83,12 +273,31 @@ export default function FishingOperationsPage() {
           <p className="text-xs sm:text-sm text-[#5f7469] mt-0.5">
             Log vessel departure, fuel usage, fishing grounds, and catch weight per species.
           </p>
+          </div>
+          {mode === "production" && (
+            <button
+              type="button"
+              onClick={handleSync}
+              disabled={syncing}
+              className="px-4 py-2.5 rounded-xl bg-white border border-[#dce9df] text-[#047857] font-bold text-xs flex items-center justify-center gap-2 shadow-xs disabled:opacity-60"
+            >
+              <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} />
+              {syncing ? "Syncing…" : `Sync (${pendingFisheriesCount})`}
+            </button>
+          )}
         </div>
 
         {feedback && (
           <div className="p-3.5 rounded-xl bg-[#ecfdf5] border border-[#a7f3d0] text-[#047857] text-xs font-bold flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span>{feedback}</span>
+          </div>
+        )}
+
+        {cloudError && mode === "production" && (
+          <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{cloudError}</span>
           </div>
         )}
 
@@ -101,13 +310,22 @@ export default function FishingOperationsPage() {
 
             <form onSubmit={handleCreateTrip} className="space-y-3 text-xs">
               <div>
-                <label className="block text-[#5f7469] font-bold mb-1">Vessel Name &amp; BFAR Registration *</label>
+                <label className="block text-[#5f7469] font-bold mb-1">Vessel Name *</label>
                 <input
                   type="text"
                   value={vesselName}
                   onChange={(e) => setVesselName(e.target.value)}
                   className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-bold text-[#163025] focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669]"
                   required
+                />
+              </div>
+              <div>
+                <label className="block text-[#5f7469] font-bold mb-1">BFAR Registration Number</label>
+                <input
+                  type="text"
+                  value={vesselRegNum}
+                  onChange={(e) => setVesselRegNum(e.target.value)}
+                  className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-bold text-[#163025] focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669]"
                 />
               </div>
 
@@ -248,7 +466,11 @@ export default function FishingOperationsPage() {
                   <label className="block text-[#5f7469] font-bold mb-1">Preservation Method</label>
                   <select
                     value={preservationMethod}
-                    onChange={(e) => setPreservationMethod(e.target.value as any)}
+                    onChange={(e) =>
+                      setPreservationMethod(
+                        e.target.value as CatchLogEntity["preservationMethod"],
+                      )
+                    }
                     className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
                   >
                     <option value="chilled_ice">Chilled in Ice (Yelo)</option>
@@ -256,6 +478,31 @@ export default function FishingOperationsPage() {
                     <option value="live">Live Catch (Buhay)</option>
                     <option value="ambient">Ambient</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[#5f7469] font-bold mb-1">For Sale (Kg)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={forSaleKg}
+                    onChange={(e) => setForSaleKg(e.target.value)}
+                    className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-bold text-[#163025]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#5f7469] font-bold mb-1">Home Use (Kg)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={homeUseKg}
+                    onChange={(e) => setHomeUseKg(e.target.value)}
+                    className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-bold text-[#163025]"
+                  />
                 </div>
               </div>
 
@@ -295,6 +542,79 @@ export default function FishingOperationsPage() {
               ))}
             </div>
           )}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <form
+            onSubmit={handleSaveDocument}
+            className="bg-white border border-[#dce9df] rounded-2xl p-5 sm:p-6 shadow-xs space-y-3 text-xs"
+          >
+            <h2 className="text-sm font-extrabold text-[#163025] flex items-center gap-2 border-b border-[#dce9df] pb-3">
+              <FileText className="w-4 h-4 text-[#059669]" />
+              Add Vessel Compliance Document
+            </h2>
+            <input
+              value={documentTitle}
+              onChange={(event) => setDocumentTitle(event.target.value)}
+              placeholder="Document title"
+              className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-bold text-[#163025]"
+              required
+            />
+            <select
+              value={documentType}
+              onChange={(event) =>
+                setDocumentType(
+                  event.target.value as DocumentEntity["documentType"],
+                )
+              }
+              className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-bold text-[#163025]"
+            >
+              <option value="VESSEL_PERMIT">BFAR / Vessel Permit</option>
+              <option value="OTHER">Municipal or Other Permit</option>
+            </select>
+            <input
+              type="file"
+              accept=".pdf,image/*"
+              onChange={(event) =>
+                {
+                  const file = event.target.files?.[0] ?? null;
+                  setDocumentFile(file);
+                  setDocumentFileName(file?.name ?? "");
+                }
+              }
+              className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#5f7469]"
+            />
+            <p className="text-[11px] text-[#5f7469]">
+              The selected file is queued locally and uploaded to private user-scoped storage when online.
+            </p>
+            <button className="w-full py-3 rounded-xl bg-[#059669] text-white font-bold flex items-center justify-center gap-2">
+              <Save className="w-4 h-4" /> Save Document Offline
+            </button>
+          </form>
+
+          <div className="bg-white border border-[#dce9df] rounded-2xl p-5 sm:p-6 shadow-xs space-y-3 text-xs">
+            <h2 className="text-sm font-extrabold text-[#163025] flex items-center gap-2 border-b border-[#dce9df] pb-3">
+              <FileText className="w-4 h-4 text-[#059669]" />
+              Vessel Documents ({fisheriesDocuments.length})
+            </h2>
+            {fisheriesDocuments.length === 0 ? (
+              <p className="text-[#9db5a5] text-center py-6">No vessel documents saved yet.</p>
+            ) : (
+              fisheriesDocuments.map((document) => (
+                <div key={document.localId} className="p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df]">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-extrabold text-[#163025]">{document.title}</p>
+                      <p className="text-[11px] text-[#5f7469]">{document.fileName ?? document.documentType}</p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0] text-[10px] font-extrabold">
+                      {document.verificationStatus}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </ProducerShell>

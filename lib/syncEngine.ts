@@ -134,6 +134,11 @@ class SynchronizationEngine {
       await this.syncTable(db.harvests, 'harvest_logs');
       await this.syncTable(db.sales, 'sales');
       await this.syncTable(db.expenses, 'expenses');
+      await this.syncTable(db.fishingTrips, 'fishing_trips');
+      await this.syncTable(db.catchLogs, 'catch_logs');
+      await this.syncTable(db.inventoryItems, 'inventory_items');
+      await this.syncMediaQueue();
+      await this.syncTable(db.documents, 'documents');
       await this.syncSmsQueue();
 
       this.lastSyncAt = new Date().toISOString();
@@ -149,6 +154,9 @@ class SynchronizationEngine {
     }
   }
 
+  // Dexie EntityTable instances have different entity shapes but share this
+  // offline synchronization contract.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async syncTable(table: any, serverEndpoint: string) {
     if (!table) return;
     const pendingItems = await table
@@ -173,7 +181,8 @@ class SynchronizationEngine {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             endpoint: serverEndpoint,
-            harvests: [item],
+            item,
+            operation: item.isDeleted ? 'DELETE' : item.serverId ? 'UPDATE' : 'CREATE',
             idempotencyKey: `${item.localId}:${item.version || 1}`,
           }),
         });
@@ -203,6 +212,10 @@ class SynchronizationEngine {
           syncError: null,
           updatedAt: new Date().toISOString(),
         });
+        await db.syncQueue
+          .where('entityLocalId')
+          .equals(item.localId)
+          .delete();
       } catch (networkErr: unknown) {
         const message = networkErr instanceof Error ? networkErr.message : 'Network request failed';
         await table.update(item.localId, {
@@ -258,6 +271,58 @@ class SynchronizationEngine {
           syncStatus: 'pending',
           syncError: message,
         });
+      }
+    }
+  }
+
+  private async syncMediaQueue() {
+    const uploads = await db.mediaQueue
+      .where('syncStatus')
+      .anyOf(['local', 'pending', 'failed'])
+      .toArray();
+
+    for (const upload of uploads) {
+      if (upload.entityType !== 'DOCUMENT') continue;
+      await db.mediaQueue.update(upload.localId, { syncStatus: 'syncing' });
+
+      try {
+        const formData = new FormData();
+        const blob =
+          upload.fileBlob instanceof Blob
+            ? upload.fileBlob
+            : new Blob([upload.fileBlob], { type: upload.fileType });
+        formData.set('file', blob, upload.fileName);
+        formData.set('documentLocalId', upload.entityLocalId);
+
+        const response = await fetch('/api/documents/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          await db.mediaQueue.update(upload.localId, { syncStatus: 'failed' });
+          continue;
+        }
+
+        const document = await db.documents.get(upload.entityLocalId);
+        if (document) {
+          await db.documents.update(document.localId, {
+            fileUrl: result.path,
+            syncStatus: 'pending',
+            updatedAt: new Date().toISOString(),
+            version: document.version + 1,
+          });
+          await db.syncQueue
+            .where('entityLocalId')
+            .equals(document.localId)
+            .modify({
+              operation: document.serverId ? 'UPDATE' : 'CREATE',
+              payload: { ...document, fileUrl: result.path },
+            });
+        }
+        await db.mediaQueue.delete(upload.localId);
+      } catch {
+        await db.mediaQueue.update(upload.localId, { syncStatus: 'pending' });
       }
     }
   }

@@ -69,7 +69,7 @@ export interface DemoExpense {
 export interface DemoInventoryItem {
   localId: string;
   name: string;
-  type: 'SEED' | 'FERTILIZER' | 'PESTICIDE' | 'FUEL' | 'PACKAGING' | 'OTHER';
+  type: 'SEED' | 'FERTILIZER' | 'PESTICIDE' | 'FUEL' | 'FISH' | 'PACKAGING' | 'OTHER';
   quantity: number;
   unit: string;
   unitCost: number;
@@ -84,6 +84,9 @@ export interface DemoFishingTrip {
   fuelUsedLiters: number;
   departedAt: string;
   status: 'DEPARTED' | 'RETURNED' | 'UNLOADED';
+  vesselRegistrationNumber?: string;
+  arrivalPort?: string;
+  returnedAt?: string;
 }
 
 export interface DemoCatch {
@@ -95,6 +98,16 @@ export interface DemoCatch {
   qualityGrade: string;
   preservationMethod: string;
   caughtAtDate: string;
+  forSaleKg?: number;
+  homeUseKg?: number;
+}
+
+export interface DemoFisheriesDocument {
+  localId: string;
+  title: string;
+  documentType: string;
+  fileName?: string;
+  verificationStatus: 'PENDING' | 'VERIFIED';
 }
 
 export interface DemoCoopSubmission {
@@ -140,6 +153,7 @@ const demoDb = new Dexie('agrihub-demo') as Dexie & {
   demoInventoryItems: EntityTable<DemoInventoryItem, 'localId'>;
   demoFishingTrips: EntityTable<DemoFishingTrip, 'localId'>;
   demoCatches: EntityTable<DemoCatch, 'localId'>;
+  demoFisheriesDocuments: EntityTable<DemoFisheriesDocument, 'localId'>;
   demoCoopSubmissions: EntityTable<DemoCoopSubmission, 'localId'>;
   demoListings: EntityTable<DemoListing, 'localId'>;
   demoOrders: EntityTable<DemoOrder, 'localId'>;
@@ -159,6 +173,10 @@ demoDb.version(2).stores({
   demoCoopSubmissions: 'localId, farmerName, status',
   demoListings: 'localId, title, coopName, commodityCategory',
   demoOrders: 'localId, listingTitle, status',
+});
+
+demoDb.version(3).stores({
+  demoFisheriesDocuments: 'localId, documentType, verificationStatus',
 });
 
 export async function seedDemoDatabase() {
@@ -206,7 +224,7 @@ export async function seedDemoDatabase() {
 
   // 4. Warehouse Inventory Items
   await demoDb.demoInventoryItems.bulkPut([
-    { localId: 'inv-1', name: 'Complete Fertilizer 14-14-14', type: 'FERTILIZING' as any, quantity: 18, unit: 'bags', unitCost: 1450 },
+    { localId: 'inv-1', name: 'Complete Fertilizer 14-14-14', type: 'FERTILIZER', quantity: 18, unit: 'bags', unitCost: 1450 },
     { localId: 'inv-2', name: 'Scorpio F1 Cabbage Seeds', type: 'SEED', quantity: 25, unit: 'packs', unitCost: 320 },
     { localId: 'inv-3', name: 'Diesel Fuel (Tractor & Pump)', type: 'FUEL', quantity: 120, unit: 'liters', unitCost: 62 },
     { localId: 'inv-4', name: 'Ventilated Produce Crates', type: 'PACKAGING', quantity: 85, unit: 'crates', unitCost: 210 },
@@ -220,6 +238,10 @@ export async function seedDemoDatabase() {
   await demoDb.demoCatches.bulkPut([
     { localId: 'catch-1', tripId: 'trip-1', vesselName: 'FB San Jose Marine Vessel', speciesName: 'Yellowfin Tuna (Tambakol)', weightKg: 450, qualityGrade: 'Class A', preservationMethod: 'Chilled Ice', caughtAtDate: today },
     { localId: 'catch-2', tripId: 'trip-1', vesselName: 'FB San Jose Marine Vessel', speciesName: 'Round Scad (Galunggong)', weightKg: 320, qualityGrade: 'Class A', preservationMethod: 'Chilled Ice', caughtAtDate: today },
+  ]);
+  await demoDb.demoFisheriesDocuments.bulkPut([
+    { localId: 'fish-doc-1', title: 'BFAR Vessel Registration', documentType: 'VESSEL_PERMIT', fileName: 'bfar-registration.pdf', verificationStatus: 'VERIFIED' },
+    { localId: 'fish-doc-2', title: 'Municipal Fishing Permit', documentType: 'LGU_PERMIT', fileName: 'municipal-permit.pdf', verificationStatus: 'PENDING' },
   ]);
 
   // 6. Coop Submissions & Listings
@@ -250,6 +272,7 @@ export async function resetDemoDatabase() {
   await demoDb.demoInventoryItems.clear();
   await demoDb.demoFishingTrips.clear();
   await demoDb.demoCatches.clear();
+  await demoDb.demoFisheriesDocuments.clear();
   await demoDb.demoCoopSubmissions.clear();
   await demoDb.demoListings.clear();
   await demoDb.demoOrders.clear();

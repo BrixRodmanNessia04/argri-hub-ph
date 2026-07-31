@@ -6,11 +6,25 @@ import { useRouter } from "next/navigation";
 import PublicHeader from "@/components/public/PublicHeader";
 import PublicFooter from "@/components/public/PublicFooter";
 import { Sprout, LogIn, Play, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+
+const roleDestinations: Record<string, string> = {
+  admin: "/admin",
+  buyer: "/buyer/dashboard",
+  coop: "/coop/dashboard",
+  farmer: "/farmer",
+  fisher: "/fisher",
+  processor: "/processor",
+  transport: "/logistics",
+  government: "/gov",
+  finance: "/finance",
+};
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("farmer.juan@agrihub.ph");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,20 +33,41 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    setTimeout(() => {
+    if (!isSupabaseConfigured()) {
       setLoading(false);
-      if (email.includes("admin")) {
-        router.push("/admin");
-      } else if (email.includes("coop")) {
-        router.push("/coop/dashboard");
-      } else if (email.includes("buyer")) {
-        router.push("/buyer/dashboard");
-      } else if (email.includes("multi")) {
-        router.push("/select-workspace");
-      } else {
-        router.push("/farmer");
-      }
-    }, 800);
+      setError("Cloud sign-in is not configured. Add the Supabase public environment variables or use Demo Mode.");
+      return;
+    }
+
+    const supabase = createClient();
+    const { data, error: signInError } =
+      await supabase.auth.signInWithPassword({ email, password });
+
+    if (signInError || !data.user) {
+      setLoading(false);
+      setError(signInError?.message ?? "Unable to sign in.");
+      return;
+    }
+
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role,is_primary")
+      .eq("user_id", data.user.id)
+      .order("is_primary", { ascending: false });
+
+    const requestedNext =
+      typeof window === "undefined"
+        ? null
+        : new URLSearchParams(window.location.search).get("next");
+    const safeNext =
+      requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
+        ? requestedNext
+        : null;
+    const primaryRole = roles?.[0]?.role ?? data.user.user_metadata.primary_role;
+
+    setLoading(false);
+    router.replace(safeNext ?? roleDestinations[primaryRole] ?? "/select-workspace");
+    router.refresh();
   };
 
   return (

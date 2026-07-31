@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PublicHeader from "@/components/public/PublicHeader";
 import PublicFooter from "@/components/public/PublicFooter";
-import { Sprout, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -23,15 +25,56 @@ export default function RegisterPage() {
   const [commodity, setCommodity] = useState("Highland Vegetables");
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
-    setTimeout(() => {
+    if (!isSupabaseConfigured()) {
       setLoading(false);
-      router.push("/verify-email");
-    }, 1000);
+      setError("Registration is not configured. Add the Supabase public environment variables first.");
+      return;
+    }
+
+    const supabase = createClient();
+    const callbackUrl = new URL("/auth/callback", window.location.origin);
+    callbackUrl.searchParams.set(
+      "next",
+      primaryRole === "fisher" ? "/fisher" : "/select-workspace",
+    );
+
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: callbackUrl.toString(),
+        data: {
+          full_name: fullName.trim(),
+          phone: phone.trim() || null,
+          primary_role: primaryRole,
+          province: province.trim(),
+          city_municipality: city.trim(),
+          organization_name: orgName.trim() || null,
+          primary_commodity: commodity.trim() || null,
+        },
+      },
+    });
+
+    setLoading(false);
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
+
+    if (data.session) {
+      router.replace(primaryRole === "fisher" ? "/fisher" : "/select-workspace");
+      router.refresh();
+      return;
+    }
+
+    router.push(`/verify-email?email=${encodeURIComponent(email)}`);
   };
 
   return (
@@ -63,6 +106,12 @@ export default function RegisterPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 text-xs font-bold">
+            {error && (
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
             {/* STEP 1 */}
             {step === 1 && (
               <div className="space-y-3">
@@ -91,11 +140,12 @@ export default function RegisterPage() {
                 <div>
                   <label className="block text-[#5f7469] mb-1">Password *</label>
                   <input
-                    type="password"
+                  type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
-                    required
+                  required
+                  minLength={8}
                   />
                 </div>
                 <div>

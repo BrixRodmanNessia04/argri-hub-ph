@@ -1,26 +1,25 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export async function aggregateHarvest(coopId: string, crop: string) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    console.warn(
-      `[AgriHub Server Action] Supabase env not configured. Executing simulated aggregateHarvest for coopId=${coopId}, crop=${crop}.`
-    );
-    revalidatePath("/dashboard");
+  if (!isSupabaseConfigured()) {
     return {
-      success: true,
-      message: `Simulated aggregation: Pooled ${crop} harvest lots into a new cooperative marketplace listing.`,
+      success: false,
+      error: "Supabase is not configured.",
     };
   }
 
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const typedClient = await createClient();
+  const {
+    data: { user },
+  } = await typedClient.auth.getUser();
+  if (!user) return { success: false, error: "Authentication required." };
+  // Legacy tables predate the generated migration-003 types.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabase = typedClient as any;
 
   // 1. Fetch all 'PENDING' harvest_logs for this crop
   const { data: pendingLogs, error: fetchError } = await supabase
@@ -43,7 +42,8 @@ export async function aggregateHarvest(coopId: string, crop: string) {
 
   // 2. Sum total weight
   const totalWeightKg = pendingLogs.reduce(
-    (sum, log) => sum + Number(log.weight_kg || 0),
+    (sum: number, log: { weight_kg: number | string | null }) =>
+      sum + Number(log.weight_kg || 0),
     0
   );
 
@@ -64,7 +64,7 @@ export async function aggregateHarvest(coopId: string, crop: string) {
   }
 
   // 4. Update harvest_logs statuses to 'AGGREGATED'
-  const logIds = pendingLogs.map((log) => log.id);
+  const logIds = pendingLogs.map((log: { id: string }) => log.id);
   const { error: updateError } = await supabase
     .from("harvest_logs")
     .update({ status: "AGGREGATED" })

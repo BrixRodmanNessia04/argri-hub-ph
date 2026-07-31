@@ -4,27 +4,28 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppRoute } from "@/lib/navigation";
+import { useApplicationContext } from "@/lib/ApplicationContext";
 import {
   Sprout,
   Fish,
   Anchor,
   Beef,
-  Egg,
   Warehouse,
   BookOpen,
-  MapPin,
   Menu,
   X,
   User,
-  ShieldCheck,
+  FileText,
+  RefreshCw,
 } from "lucide-react";
 
 export default function ProducerShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const buildRoute = useAppRoute();
+  const { role } = useApplicationContext();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const navItems = [
+  const producerNavItems = [
     { label: "Producer Portal", href: "/producer", icon: Sprout },
     { label: "Farmer PWA", href: "/farmer", icon: Sprout },
     { label: "Fisheries & Vessels", href: "/producer?type=fisheries", icon: Fish },
@@ -34,6 +35,15 @@ export default function ProducerShell({ children }: { children: React.ReactNode 
     { label: "Ledger & Income", href: "/farmer/ledger", icon: BookOpen },
     { label: "Producer Profile", href: "/farmer/profile", icon: User },
   ];
+  const fisheriesNavItems = [
+    { label: "Fisheries Dashboard", href: "/fisher", icon: Fish },
+    { label: "Trips & Catch Logs", href: "/fisher/trips", icon: Anchor },
+    { label: "Fuel & Fish Inventory", href: "/fisher/inventory", icon: Warehouse },
+    { label: "Vessel Documents", href: "/fisher/documents", icon: FileText },
+    { label: "Offline Sync", href: "/fisher/sync", icon: RefreshCw },
+  ];
+  const navItems = role === "fisher" ? fisheriesNavItems : producerNavItems;
+  const homeRoute = role === "fisher" ? "/fisher" : "/producer";
 
   return (
     <div className="min-h-screen bg-[#f6fbf7] text-[#163025] flex flex-col font-sans">
@@ -47,23 +57,25 @@ export default function ProducerShell({ children }: { children: React.ReactNode 
             <Menu className="w-5 h-5" />
           </button>
 
-          <Link href={buildRoute("/producer")} className="flex items-center gap-2">
+          <Link href={buildRoute(homeRoute)} className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-[#059669] text-white flex items-center justify-center font-bold">
               <Sprout className="w-5 h-5" />
             </div>
             <div>
               <span className="font-extrabold text-sm text-[#163025] tracking-wide block">AgriHub PH</span>
-              <span className="text-[10px] font-bold text-[#059669] block -mt-1">Producer Value Chain</span>
+              <span className="text-[10px] font-bold text-[#059669] block -mt-1">
+                {role === "fisher" ? "Fisheries Workspace" : "Producer Value Chain"}
+              </span>
             </div>
           </Link>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0] text-[10px] font-extrabold">
-            AGRICULTURE &amp; FISHERIES
+            {role === "fisher" ? "CAPTURE FISHERIES" : "AGRICULTURE & FISHERIES"}
           </span>
           <Link
-            href={buildRoute("/farmer/profile")}
+            href={buildRoute(role === "fisher" ? "/fisher" : "/farmer/profile")}
             className="p-2 rounded-xl bg-[#f6fbf7] hover:bg-[#ecfdf5] border border-[#dce9df] text-[#163025]"
           >
             <User className="w-4 h-4" />
@@ -78,7 +90,7 @@ export default function ProducerShell({ children }: { children: React.ReactNode 
           <div className="space-y-6">
             <div className="px-1">
               <h2 className="text-[10px] uppercase font-black text-[#059669] tracking-wider">
-                Producer Workspaces
+                {role === "fisher" ? "Fisheries Workspace" : "Producer Workspaces"}
               </h2>
             </div>
             <nav className="space-y-1">
@@ -118,7 +130,9 @@ export default function ProducerShell({ children }: { children: React.ReactNode 
           <div className="relative w-72 bg-white border-r border-[#dce9df] p-6 flex flex-col justify-between z-50 space-y-4">
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-[#dce9df] pb-3">
-                <span className="font-extrabold text-sm text-[#163025]">Producer Workspaces</span>
+                <span className="font-extrabold text-sm text-[#163025]">
+                  {role === "fisher" ? "Fisheries Workspace" : "Producer Workspaces"}
+                </span>
                 <button onClick={() => setDrawerOpen(false)} className="p-1 rounded-full text-[#5f7469] hover:bg-[#f6fbf7]">
                   <X className="w-5 h-5" />
                 </button>

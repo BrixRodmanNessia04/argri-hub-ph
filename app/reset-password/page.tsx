@@ -5,14 +5,35 @@ import Link from "next/link";
 import PublicHeader from "@/components/public/PublicHeader";
 import PublicFooter from "@/components/public/PublicFooter";
 import { CheckCircle2, Lock } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [updated, setUpdated] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (!isSupabaseConfigured()) {
+      setError("Password recovery is not configured.");
+      return;
+    }
+    const { error: updateError } = await createClient().auth.updateUser({ password });
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
     setUpdated(true);
   };
 
@@ -37,6 +58,7 @@ export default function ResetPasswordPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && <p className="text-rose-700">{error}</p>}
               <div>
                 <label className="block text-[#5f7469] mb-1">New Password</label>
                 <input

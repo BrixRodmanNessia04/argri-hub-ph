@@ -5,13 +5,29 @@ import Link from "next/link";
 import PublicHeader from "@/components/public/PublicHeader";
 import PublicFooter from "@/components/public/PublicFooter";
 import { Mail, CheckCircle2, ArrowLeft } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    if (!isSupabaseConfigured()) {
+      setError("Password recovery is not configured.");
+      return;
+    }
+    const { error: resetError } = await createClient().auth.resetPasswordForEmail(
+      email,
+      { redirectTo: `${window.location.origin}/auth/callback?next=/reset-password` },
+    );
+    if (resetError) {
+      setError(resetError.message);
+      return;
+    }
     setSent(true);
   };
 
@@ -36,6 +52,7 @@ export default function ForgotPasswordPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && <p className="text-rose-700">{error}</p>}
               <div>
                 <label className="block text-[#5f7469] mb-1">Email Address</label>
                 <input

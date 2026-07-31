@@ -6,8 +6,7 @@ import {
   AquacultureCycleEntity,
   LivestockPoultryBatchEntity,
   HealthObservationEntity,
-  ProductionForecastEntity,
-  ProductionCycleEntity,
+  DocumentEntity,
 } from "./db";
 import { queueSyncOperation, recordInventoryMovement } from "./farmerRepository";
 
@@ -22,9 +21,11 @@ export async function createFishingTrip(params: {
   fuelUsedLiters?: number;
   crewCount: number;
   fuelInventoryItemId?: string;
+  userId?: string;
+  organizationId?: string | null;
 }): Promise<FishingTripEntity> {
   const trip: FishingTripEntity = {
-    ...createBaseEntity(),
+    ...createBaseEntity(params.userId ?? "local-pending-user", params.organizationId ?? null),
     vesselName: params.vesselName,
     vesselRegistrationNumber: params.vesselRegistrationNumber,
     departurePort: params.departurePort,
@@ -63,9 +64,11 @@ export async function recordCatchLog(params: {
   caughtAtDate?: string;
   forSaleKg?: number;
   homeUseKg?: number;
+  userId?: string;
+  organizationId?: string | null;
 }): Promise<CatchLogEntity> {
   const catchLog: CatchLogEntity = {
-    ...createBaseEntity(),
+    ...createBaseEntity(params.userId ?? "local-pending-user", params.organizationId ?? null),
     tripId: params.tripId,
     speciesName: params.speciesName,
     weightKg: params.weightKg,
@@ -79,7 +82,78 @@ export async function recordCatchLog(params: {
 
   await db.catchLogs.add(catchLog);
   await queueSyncOperation("catch_logs", catchLog.localId, "CREATE", catchLog as unknown as Record<string, unknown>);
+
+  const existingInventory = await db.inventoryItems
+    .filter(
+      (item) =>
+        !item.isDeleted &&
+        item.type === "HARVESTED" &&
+        item.crop.toLowerCase() === params.speciesName.toLowerCase(),
+    )
+    .first();
+  if (existingInventory) {
+    const updatedInventory = {
+      ...existingInventory,
+      quantityInKg: existingInventory.quantityInKg + (params.forSaleKg ?? params.weightKg),
+      fisheriesUse: true,
+      updatedAt: new Date().toISOString(),
+      syncStatus: "pending" as const,
+      version: existingInventory.version + 1,
+    };
+    await db.inventoryItems.put(updatedInventory);
+    await queueSyncOperation(
+      "inventory_items",
+      updatedInventory.localId,
+      "UPDATE",
+      updatedInventory as unknown as Record<string, unknown>,
+    );
+  } else {
+    const inventoryItem = {
+      ...createBaseEntity(params.userId ?? "local-pending-user", params.organizationId ?? null),
+      crop: params.speciesName,
+      type: "HARVESTED" as const,
+      quantityInKg: params.forSaleKg ?? params.weightKg,
+      unit: "kg",
+      fisheriesUse: true,
+    };
+    await db.inventoryItems.add(inventoryItem);
+    await queueSyncOperation(
+      "inventory_items",
+      inventoryItem.localId,
+      "CREATE",
+      inventoryItem as unknown as Record<string, unknown>,
+    );
+  }
   return catchLog;
+}
+
+export async function createFisheriesDocument(params: {
+  title: string;
+  documentType: DocumentEntity["documentType"];
+  fileName?: string;
+  userId?: string;
+  organizationId?: string | null;
+}): Promise<DocumentEntity> {
+  const document: DocumentEntity = {
+    ...createBaseEntity(
+      params.userId ?? "local-pending-user",
+      params.organizationId ?? null,
+    ),
+    title: params.title,
+    documentType: params.documentType,
+    entityType: "PRODUCER",
+    entityLocalId: params.userId ?? "local-fisher-profile",
+    fileName: params.fileName,
+    verificationStatus: "submitted",
+  };
+  await db.documents.add(document);
+  await queueSyncOperation(
+    "documents",
+    document.localId,
+    "CREATE",
+    document as unknown as Record<string, unknown>,
+  );
+  return document;
 }
 
 // 2. Aquaculture Pond / Cage Stocking Operations
@@ -193,7 +267,8 @@ export async function createHealthObservation(params: {
 }
 
 // 5. Cooperative Production Forecast Visibility Engine
-export async function getCoopExpectedProduction(cooperativeId: string = "coop-456") {
+export async function getCoopExpectedProduction(_cooperativeId: string = "coop-456") {
+  void _cooperativeId;
   const crops = await db.cropCycles.filter((c) => !c.isDeleted).toArray();
   const catchLogs = await db.catchLogs.filter((c) => !c.isDeleted).toArray();
   const aquaculture = await db.aquacultureCycles.filter((a) => !a.isDeleted).toArray();

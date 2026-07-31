@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { seedProductionDatabase } from "@/lib/db";
 import { seedDemoDatabase } from "@/lib/demoDb";
+import { createClient as createSupabaseClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export type ApplicationMode = "production" | "demo";
 
@@ -43,22 +45,54 @@ export function ApplicationContextProvider({
   children,
   initialMode = "production",
   initialRole = "farmer",
+  initialUserId,
+  initialOrganizationId,
+  seedLocalData = true,
 }: {
   children: React.ReactNode;
   initialMode?: ApplicationMode;
   initialRole?: WorkspaceRole;
+  initialUserId?: string;
+  initialOrganizationId?: string | null;
+  seedLocalData?: boolean;
 }) {
   const [mode, setMode] = useState<ApplicationMode>(initialMode);
   const [role, setRole] = useState<WorkspaceRole>(initialRole);
+  const [authenticatedUserId, setAuthenticatedUserId] = useState(
+    initialUserId ?? "local-pending-user",
+  );
+  const [authenticatedOrganizationId, setAuthenticatedOrganizationId] =
+    useState<string | null>(initialOrganizationId ?? null);
 
   useEffect(() => {
-    seedProductionDatabase();
-    seedDemoDatabase();
-  }, []);
+    if (mode === "demo") {
+      void seedDemoDatabase();
+      return;
+    }
 
-  const userId = mode === "demo" ? `demo-user-${role}` : "prod-user-123";
+    if (seedLocalData) void seedProductionDatabase();
+    if (!isSupabaseConfigured()) return;
+
+    const supabase = createSupabaseClient();
+    void supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      setAuthenticatedUserId(data.user.id);
+
+      const { data: membership } = await supabase
+        .from("organization_memberships")
+        .select("organization_id")
+        .eq("user_id", data.user.id)
+        .eq("status", "ACTIVE")
+        .limit(1)
+        .maybeSingle();
+      setAuthenticatedOrganizationId(membership?.organization_id ?? null);
+    });
+  }, [mode, seedLocalData]);
+
+  const userId = mode === "demo" ? `demo-user-${role}` : authenticatedUserId;
   const tenantId = mode === "demo" ? `demo-tenant-${role}` : "prod-tenant-789";
-  const organizationId = mode === "demo" ? `demo-org-${role}` : "prod-org-456";
+  const organizationId =
+    mode === "demo" ? `demo-org-${role}` : authenticatedOrganizationId;
 
   return (
     <ApplicationContext.Provider
