@@ -24,7 +24,7 @@ export default function CoopAIHistoryPage() {
         </Link>
 
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight flex items-center gap-2">
             <History className="w-6 h-6 text-teal-400" />
             AI Query Audit Log ({logs.length})
           </h1>

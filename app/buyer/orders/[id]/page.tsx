@@ -2,25 +2,25 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, FileText, CheckCircle2, Truck, ShieldCheck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function BuyerOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
 
   return (
-    <div className="min-h-screen bg-white text-slate-100 p-6 md:p-12">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] p-4 sm:p-6 md:p-12">
       <div className="max-w-3xl mx-auto space-y-6">
-        <Link href="/buyer/orders" className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-xs font-semibold">
+        <Link href="/buyer/orders" className="inline-flex min-h-11 items-center gap-2 text-[#5f7469] hover:text-[#047857] text-xs font-semibold">
           <ArrowLeft className="w-4 h-4" /> Back to Orders
         </Link>
 
         <div className="bg-white border border-[#dce9df] rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
-          <div className="flex items-center justify-between border-b border-[#dce9df] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#dce9df] pb-4">
             <div>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
                 ORDER INVOICE &amp; FULFILLMENT
               </span>
-              <h1 className="text-2xl font-extrabold text-white mt-1">
+              <h1 className="text-2xl font-extrabold text-[#163025] mt-1">
                 Order #{resolvedParams.id}
               </h1>
             </div>
@@ -31,19 +31,19 @@ export default function BuyerOrderDetailPage({ params }: { params: Promise<{ id:
 
           <div className="space-y-3 text-xs">
             <div className="p-4 rounded-xl bg-white border border-[#dce9df] space-y-2">
-              <div className="flex justify-between text-slate-400">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-[#5f7469]">
                 <span>Supplier Cooperative:</span>
-                <span className="text-white font-bold">Benguet Farmers Cooperative #456</span>
+                <span className="text-[#163025] font-bold">Benguet Farmers Cooperative #456</span>
               </div>
-              <div className="flex justify-between text-slate-400">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-[#5f7469]">
                 <span>Items Ordered:</span>
-                <span className="text-white font-bold">300 kg Benguet Highland Cabbage</span>
+                <span className="text-[#163025] font-bold">300 kg Benguet Highland Cabbage</span>
               </div>
-              <div className="flex justify-between text-slate-400">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-[#5f7469]">
                 <span>Cold-Chain Status:</span>
                 <span className="text-blue-400 font-bold">In Transit (Reefer Truck #CAR-809)</span>
               </div>
-              <div className="flex justify-between text-white font-extrabold text-sm pt-2 border-t border-[#dce9df]">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-[#163025] font-extrabold text-sm pt-2 border-t border-[#dce9df]">
                 <span>Total Tax Invoice:</span>
                 <span className="text-emerald-400">₱12,000.00</span>
               </div>

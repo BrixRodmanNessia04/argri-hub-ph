@@ -2,10 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck, MapPin, Sprout, Truck, Store } from "lucide-react";
+import { ArrowLeft, Building, Handshake, MapPin, ShoppingCart } from "lucide-react";
+import { useApplicationContext } from "@/lib/ApplicationContext";
+import { useAppRoute } from "@/lib/navigation";
 
 export default function ProductTraceabilityPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
+  const { mode } = useApplicationContext();
+  const buildRoute = useAppRoute();
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-6 md:p-12">
@@ -66,9 +70,25 @@ export default function ProductTraceabilityPage({ params }: { params: Promise<{ 
               </div>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-slate-800">
+            <Link href={buildRoute("/market/cart")} className="rounded-xl bg-emerald-600 px-5 py-3 text-center text-sm font-extrabold text-white flex items-center justify-center gap-2">
+              <ShoppingCart className="w-4 h-4" /> Purchase at listed terms
+            </Link>
+            <Link
+              href={buildRoute(`/buyer/negotiations?${new URLSearchParams({
+                ...(mode === "demo" ? { listingId: resolvedParams.id } : {}),
+                commodityId: resolvedParams.id,
+                commodityName: "Benguet Highland Cabbage",
+                sector: "agriculture",
+              }).toString()}`)}
+              className="rounded-xl border border-emerald-500 bg-emerald-500/10 px-5 py-3 text-center text-sm font-extrabold text-emerald-300 flex items-center justify-center gap-2"
+            >
+              <Handshake className="w-4 h-4" /> Negotiate commercial terms
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-import { Building } from "lucide-react";

@@ -3,7 +3,7 @@
 
 -- 1. Farms Table
 CREATE TABLE IF NOT EXISTS farms (
-    id TEXT PRIMARY KEY DEFAULT uuid_generate_v4()::TEXT,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     cooperative_id TEXT REFERENCES cooperatives(id) ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS farms (
 
 -- 2. Plots Table
 CREATE TABLE IF NOT EXISTS plots (
-    id TEXT PRIMARY KEY DEFAULT uuid_generate_v4()::TEXT,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
     farm_id TEXT NOT NULL REFERENCES farms(id) ON DELETE CASCADE,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS plots (
 
 -- 3. Crop Cycles Table
 CREATE TABLE IF NOT EXISTS crop_cycles (
-    id TEXT PRIMARY KEY DEFAULT uuid_generate_v4()::TEXT,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
     plot_id TEXT NOT NULL REFERENCES plots(id) ON DELETE CASCADE,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     crop VARCHAR(100) NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS crop_cycles (
 
 -- 4. Field Activities Table
 CREATE TABLE IF NOT EXISTS field_activities (
-    id TEXT PRIMARY KEY DEFAULT uuid_generate_v4()::TEXT,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
     crop_cycle_id TEXT NOT NULL REFERENCES crop_cycles(id) ON DELETE CASCADE,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     activity_type VARCHAR(50) NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS field_activities (
 
 -- 5. Sales Table
 CREATE TABLE IF NOT EXISTS sales (
-    id TEXT PRIMARY KEY DEFAULT uuid_generate_v4()::TEXT,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     buyer_name VARCHAR(255) NOT NULL,
     crop VARCHAR(100) NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS sales (
 
 -- 6. Expenses Table
 CREATE TABLE IF NOT EXISTS expenses (
-    id TEXT PRIMARY KEY DEFAULT uuid_generate_v4()::TEXT,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     category VARCHAR(50) NOT NULL,
     description TEXT NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS expenses (
 
 -- 7. Audit Logs Table
 CREATE TABLE IF NOT EXISTS audit_logs (
-    id TEXT PRIMARY KEY DEFAULT uuid_generate_v4()::TEXT,
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::TEXT,
     user_id TEXT,
     action VARCHAR(100) NOT NULL,
     entity_type VARCHAR(100) NOT NULL,

@@ -127,7 +127,7 @@ export default function ProducerShell({ children }: { children: React.ReactNode 
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <div className="fixed inset-0 bg-[#163025]/60 backdrop-blur-xs" onClick={() => setDrawerOpen(false)} />
-          <div className="relative w-72 bg-white border-r border-[#dce9df] p-6 flex flex-col justify-between z-50 space-y-4">
+          <div className="relative w-72 max-w-[88vw] bg-white border-r border-[#dce9df] p-5 sm:p-6 flex flex-col justify-between z-50 space-y-4 overflow-y-auto">
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-[#dce9df] pb-3">
                 <span className="font-extrabold text-sm text-[#163025]">

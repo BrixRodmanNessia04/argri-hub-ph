@@ -73,7 +73,7 @@ export default function CoopAIPage() {
                 DATA-GROUNDED AI OPERATIONS ASSISTANT
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1.5 flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight mt-1.5 flex items-center gap-2">
               <Bot className="w-6 h-6 text-teal-400" />
               Cooperative AI Operations Assistant
             </h1>

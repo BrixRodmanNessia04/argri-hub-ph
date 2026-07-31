@@ -2,12 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useAppRoute } from "@/lib/navigation";
 import { Factory, Package, Layers, ShieldCheck, User, Menu, X } from "lucide-react";
 
 export default function ProcessorShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const buildRoute = useAppRoute();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -74,6 +72,32 @@ export default function ProcessorShell({ children }: { children: React.ReactNode
 
         <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">{children}</main>
       </div>
+
+      {drawerOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          <button type="button" aria-label="Close processor navigation" className="fixed inset-0 bg-[#163025]/60 backdrop-blur-xs" onClick={() => setDrawerOpen(false)} />
+          <aside className="relative w-72 max-w-[88vw] h-full bg-white p-5 shadow-2xl overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#dce9df] pb-3 mb-4">
+              <span className="font-extrabold text-sm">Facility Operations</span>
+              <button type="button" onClick={() => setDrawerOpen(false)} className="min-w-11 min-h-11 rounded-full bg-[#f6fbf7] flex items-center justify-center" aria-label="Close navigation">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <nav className="space-y-1">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const targetRoute = buildRoute(item.href);
+                return (
+                  <Link key={item.label} href={targetRoute} onClick={() => setDrawerOpen(false)} className="min-h-11 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-[#163025] hover:bg-[#f6fbf7]">
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </aside>
+        </div>
+      )}
     </div>
   );
 }

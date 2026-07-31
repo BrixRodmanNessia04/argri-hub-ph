@@ -5,6 +5,9 @@ import DemoHeader from "@/components/demo/DemoHeader";
 import { ApplicationContextProvider } from "@/lib/ApplicationContext";
 
 import BuyerMarketPage from "@/app/market/page";
+import BuyerCartPage from "@/app/market/cart/page";
+import BuyerCheckoutPage from "@/app/market/checkout/page";
+import BuyerProductPage from "@/app/market/products/[id]/page";
 import BuyerDashboardPage from "@/app/buyer/dashboard/page";
 import BuyerOrdersPage from "@/app/buyer/orders/page";
 import BuyerInvoicesPage from "@/app/buyer/invoices/page";
@@ -12,6 +15,7 @@ import BuyerSuppliersPage from "@/app/buyer/suppliers/page";
 import BuyerSavedPage from "@/app/buyer/saved/page";
 import BuyerProfilePage from "@/app/buyer/profile/page";
 import BuyerSettingsPage from "@/app/buyer/settings/page";
+import BuyerNegotiationsPage from "@/app/buyer/negotiations/[[...slug]]/page";
 
 export default function DemoBuyerCatchAllPage({
   params,
@@ -28,6 +32,8 @@ export default function DemoBuyerCatchAllPage({
         return <BuyerDashboardPage />;
       case "orders":
         return <BuyerOrdersPage />;
+      case "negotiations":
+        return <BuyerNegotiationsPage params={Promise.resolve({ slug: slug.slice(1) })} />;
       case "invoices":
         return <BuyerInvoicesPage />;
       case "suppliers":
@@ -39,6 +45,12 @@ export default function DemoBuyerCatchAllPage({
       case "settings":
         return <BuyerSettingsPage />;
       case "market":
+        if (slug[1] === "cart") return <BuyerCartPage />;
+        if (slug[1] === "checkout") return <BuyerCheckoutPage />;
+        if (slug[1] === "products" && slug[2]) {
+          return <BuyerProductPage params={Promise.resolve({ id: slug[2] })} />;
+        }
+        return <BuyerMarketPage />;
       default:
         return <BuyerMarketPage />;
     }

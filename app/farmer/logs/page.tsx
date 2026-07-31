@@ -123,7 +123,7 @@ export default function UnifiedFarmerLogsPage() {
             <span>Filters &amp; Search</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
             {/* Search */}
             <div className="relative sm:col-span-2">
               <Search className="w-4 h-4 text-[#9db5a5] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />

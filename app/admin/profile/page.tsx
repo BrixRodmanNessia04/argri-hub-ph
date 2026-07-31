@@ -33,7 +33,7 @@ export default function AdminProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-100 flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen bg-white text-[#163025] flex flex-col md:flex-row font-sans">
       <AdminSidebarNav />
 
       <main className="flex-1 p-4 md:p-8 overflow-y-auto space-y-6">
@@ -56,52 +56,52 @@ export default function AdminProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* LEFT: EDITABLE PROFILE */}
           <div className="md:col-span-7 bg-white border border-[#dce9df] rounded-2xl p-6 shadow-xl space-y-5">
-            <h2 className="text-base font-extrabold text-white flex items-center gap-2 border-b border-[#dce9df] pb-3">
+            <h2 className="text-base font-extrabold text-[#163025] flex items-center gap-2 border-b border-[#dce9df] pb-3">
               <UserCheck className="w-5 h-5 text-emerald-500" /> Personal Administrator Details
             </h2>
 
             <form onSubmit={handleSave} className="space-y-4 text-xs">
               <div>
-                <label className="block font-bold text-slate-300 mb-1">Full Name</label>
+                <label className="block font-bold text-[#385747] mb-1">Full Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-white border border-[#dce9df] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                  className="w-full p-3 rounded-xl bg-white border border-[#dce9df] text-[#163025] font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-300 mb-1">Position / Official Title</label>
+                <label className="block font-bold text-[#385747] mb-1">Position / Official Title</label>
                 <input
                   type="text"
                   value={position}
                   onChange={(e) => setPosition(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-white border border-[#dce9df] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                  className="w-full p-3 rounded-xl bg-white border border-[#dce9df] text-[#163025] font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-bold text-slate-300 mb-1">System Email</label>
+                  <label className="block font-bold text-[#385747] mb-1">System Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-white border border-[#dce9df] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    className="w-full p-3 rounded-xl bg-white border border-[#dce9df] text-[#163025] font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-300 mb-1">Mobile Contact</label>
+                  <label className="block font-bold text-[#385747] mb-1">Mobile Contact</label>
                   <input
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-white border border-[#dce9df] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    className="w-full p-3 rounded-xl bg-white border border-[#dce9df] text-[#163025] font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-600"
                     required
                   />
                 </div>
@@ -121,7 +121,7 @@ export default function AdminProfilePage() {
           {/* RIGHT: PERMISSION & SECURITY SUMMARY */}
           <div className="md:col-span-5 space-y-6">
             <div className="bg-white border border-[#dce9df] rounded-2xl p-6 shadow-xl space-y-4 text-xs">
-              <h2 className="text-sm font-extrabold text-white flex items-center gap-2 border-b border-[#dce9df] pb-3">
+              <h2 className="text-sm font-extrabold text-[#163025] flex items-center gap-2 border-b border-[#dce9df] pb-3">
                 <Lock className="w-4 h-4 text-emerald-500" /> Permission Level &amp; Security
               </h2>
 
@@ -143,13 +143,13 @@ export default function AdminProfilePage() {
               <div className="space-y-2 pt-1">
                 <span className="text-slate-400 font-bold block">Active Security Controls</span>
                 <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#dce9df]">
-                  <span className="font-semibold text-slate-300">Multi-Factor Auth (MFA)</span>
+                  <span className="font-semibold text-[#385747]">Multi-Factor Auth (MFA)</span>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 text-[10px] font-bold border border-emerald-800">
                     ENABLED
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#dce9df]">
-                  <span className="font-semibold text-slate-300">Session Timeout</span>
+                  <span className="font-semibold text-[#385747]">Session Timeout</span>
                   <span className="font-mono text-slate-400 text-[11px]">30 mins idle</span>
                 </div>
               </div>
@@ -159,7 +159,7 @@ export default function AdminProfilePage() {
             <div className="grid grid-cols-2 gap-3 text-xs font-bold">
               <Link
                 href="/admin/users"
-                className="p-3.5 rounded-2xl bg-white hover:bg-slate-850 border border-[#dce9df] text-slate-200 flex flex-col items-center gap-1.5 text-center"
+                className="p-3.5 rounded-2xl bg-white hover:bg-slate-850 border border-[#dce9df] text-[#385747] flex flex-col items-center gap-1.5 text-center"
               >
                 <Users className="w-5 h-5 text-emerald-500" />
                 <span>User Roles</span>
@@ -167,7 +167,7 @@ export default function AdminProfilePage() {
 
               <Link
                 href="/admin/audit-logs"
-                className="p-3.5 rounded-2xl bg-white hover:bg-slate-850 border border-[#dce9df] text-slate-200 flex flex-col items-center gap-1.5 text-center"
+                className="p-3.5 rounded-2xl bg-white hover:bg-slate-850 border border-[#dce9df] text-[#385747] flex flex-col items-center gap-1.5 text-center"
               >
                 <Activity className="w-5 h-5 text-emerald-500" />
                 <span>Audit Logs</span>

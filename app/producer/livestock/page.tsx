@@ -45,7 +45,7 @@ export default function LivestockPoultryPage() {
           <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
             LIVESTOCK HUSBANDRY &amp; POULTRY FLOCKS
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight mt-1 flex items-center gap-2">
             <Beef className="w-6 h-6 text-amber-400" />
             Livestock Herds &amp; Poultry Flock Batches
           </h1>

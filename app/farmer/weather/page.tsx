@@ -50,7 +50,7 @@ export default function FarmerWeatherPage() {
 
         <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm space-y-3">
           <h2 className="text-sm font-bold text-slate-900">4-Day Agricultural Forecast</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
             {forecast.map((f) => {
               const Icon = f.icon;
               return (

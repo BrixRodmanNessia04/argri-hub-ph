@@ -11,7 +11,7 @@ import {
   UserPlus,
   LogOut,
   ChevronDown,
-  Menu,
+  MoreHorizontal,
   X,
   Fish,
   Building2,
@@ -26,7 +26,6 @@ import {
 export default function DemoHeader({ roleName }: { roleName: string }) {
   const pathname = usePathname();
   const [resetting, setResetting] = useState(false);
-  const [feedback, setFeedback] = useState<string | null>(null);
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -47,9 +46,7 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
     await resetDemoDatabase();
     await resetProductionDatabase();
     setResetting(false);
-    setFeedback("Demo data reset to original state!");
     setTimeout(() => {
-      setFeedback(null);
       window.location.reload();
     }, 1000);
   };
@@ -58,15 +55,15 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
     <header className="bg-white border-b border-[#dce9df] sticky top-0 z-50 shadow-xs">
       {/* Top Banner Notice */}
       <div className="bg-[#ecfdf5] border-b border-[#a7f3d0] px-4 py-1.5 text-xs text-[#047857] flex items-center justify-between">
-        <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 font-extrabold">
+        <div className="max-w-7xl mx-auto w-full min-w-0 flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2 font-extrabold">
             <span className="px-2 py-0.5 rounded-md bg-[#059669] text-white text-[10px] uppercase font-black tracking-wider">
               DEMO MODE — FULL FEATURE REUSE
             </span>
-            <span>Isolated fictional data. Actions do not write to production servers.</span>
+            <span className="hidden min-[430px]:inline truncate">Isolated fictional data. Actions do not write to production servers.</span>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-[11px] font-bold">
+          <div className="hidden lg:flex items-center gap-2 text-[11px] font-bold">
             <button
               onClick={handleReset}
               disabled={resetting}
@@ -84,21 +81,21 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
 
       {/* Main Demo Navbar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-[#059669] text-white flex items-center justify-center font-bold">
               <Sprout className="w-4.5 h-4.5" />
             </div>
-            <span className="font-extrabold text-sm text-[#163025]">AgriHub PH</span>
+            <span className="hidden min-[390px]:inline font-extrabold text-sm text-[#163025]">AgriHub PH</span>
           </Link>
 
           {/* Role Switcher Dropdown */}
           <div className="relative">
             <button
               onClick={() => setRoleMenuOpen(!roleMenuOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-xs font-extrabold text-[#047857] hover:bg-[#ecfdf5]"
+              className="flex min-h-11 min-w-0 max-w-[52vw] sm:max-w-sm items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-xs font-extrabold text-[#047857] hover:bg-[#ecfdf5]"
             >
-              <span>{roleName}</span>
+              <span className="truncate">{roleName}</span>
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
 
@@ -132,7 +129,7 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
         </div>
 
         {/* Action Controls */}
-        <div className="hidden sm:flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
           <button
             onClick={handleReset}
             disabled={resetting}
@@ -159,46 +156,32 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
           </Link>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile demo actions; workspace switching stays in the role selector. */}
         <button
           onClick={() => setMobileMenuOpen(true)}
-          className="sm:hidden p-2 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025]"
+          aria-label="Open demo actions"
+          className="lg:hidden p-2 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025]"
         >
-          <Menu className="w-5 h-5" />
+          <MoreHorizontal className="w-5 h-5" />
         </button>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex sm:hidden">
+        <div className="fixed inset-0 z-50 flex lg:hidden">
           <div className="fixed inset-0 bg-[#163025]/60 backdrop-blur-xs" onClick={() => setMobileMenuOpen(false)} />
-          <div className="relative w-80 bg-white border-r border-[#dce9df] p-6 flex flex-col justify-between z-50 space-y-4">
+          <div className="relative w-80 max-w-[88vw] bg-white border-r border-[#dce9df] p-5 sm:p-6 flex flex-col justify-between z-50 space-y-4 overflow-y-auto">
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-[#dce9df] pb-3">
-                <span className="font-extrabold text-sm text-[#163025]">Switch Demo Workspace</span>
+                <span className="font-extrabold text-sm text-[#163025]">Demo actions</span>
                 <button onClick={() => setMobileMenuOpen(false)} className="p-1.5 rounded-full text-[#5f7469] hover:bg-[#f6fbf7]">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="space-y-1">
-                {demoRoles.map((r) => {
-                  const Icon = r.icon;
-                  return (
-                    <Link
-                      key={r.href}
-                      href={r.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold ${
-                        pathname === r.href ? "bg-[#059669] text-white" : "text-[#163025] hover:bg-[#f6fbf7]"
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{r.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
+              <p className="text-xs leading-relaxed text-[#5f7469]">
+                Use the role selector in the header to switch workspaces. These actions only affect isolated demo data.
+              </p>
             </div>
 
             <div className="space-y-2 border-t border-[#dce9df] pt-3">
@@ -214,6 +197,13 @@ export default function DemoHeader({ roleName }: { roleName: string }) {
                 className="w-full py-2.5 rounded-xl bg-[#059669] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-xs"
               >
                 <UserPlus className="w-4 h-4" /> Create Real Account
+              </Link>
+              <Link
+                href="/demo"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-white border border-[#dce9df] text-[#163025] font-bold text-xs flex items-center justify-center gap-2"
+              >
+                <LogOut className="w-4 h-4" /> Exit Demo
               </Link>
             </div>
           </div>

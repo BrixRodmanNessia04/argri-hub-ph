@@ -2,18 +2,41 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "AgriHub - Offline-First Harvest Tracker",
+    id: "/",
+    name: "AgriHub PH",
     short_name: "AgriHub",
-    description: "Offline-first PWA harvest tracking for agricultural teams and farmers.",
+    description: "Offline-capable agriculture and fisheries operations platform.",
     start_url: "/",
+    scope: "/",
     display: "standalone",
-    background_color: "#0f172a",
-    theme_color: "#16a34a",
+    background_color: "#f4faf5",
+    theme_color: "#059669",
+    orientation: "any",
+    categories: ["business", "productivity", "agriculture"],
     icons: [
       {
-        src: "/favicon.ico",
-        sizes: "any",
-        type: "image/x-icon",
+        src: "/icons/icon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/maskable-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: "/icons/maskable-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
       },
     ],
   };

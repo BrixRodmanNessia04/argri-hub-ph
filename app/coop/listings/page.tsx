@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CoopLayout from "@/components/CoopLayout";
-import { Store, Tag, Sprout, Eye, PauseCircle, PlayCircle, CheckCircle2 } from "lucide-react";
+import { PauseCircle, PlayCircle, CheckCircle2, Handshake } from "lucide-react";
+import { useAppRoute } from "@/lib/navigation";
 
 export default function CoopListingsPage() {
+  const buildRoute = useAppRoute();
   const [listings, setListings] = useState([
     { id: "list-1", crop: "Benguet Highland Cabbage", grade: "Class A", weightKg: 500, pricePerKg: 40.0, reservedKg: 100, inquiriesCount: 3, status: "ACTIVE_STOCK" },
     { id: "list-2", crop: "Atok Sweet Carrots", grade: "Class A", weightKg: 350, pricePerKg: 55.0, reservedKg: 50, inquiriesCount: 2, status: "ACTIVE_STOCK" },
@@ -28,7 +31,7 @@ export default function CoopListingsPage() {
           <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
             WHOLESALE MARKETPLACE LISTINGS
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight mt-1">
             Published B2B Produce Listings ({listings.length})
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
@@ -81,7 +84,14 @@ export default function CoopListingsPage() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2 text-xs font-bold">
+                <div className="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-end gap-2 text-xs font-bold">
+                  <Link
+                    href={buildRoute(`/coop/negotiations?listingId=${item.id}`)}
+                    className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1"
+                  >
+                    <Handshake className="w-3.5 h-3.5" />
+                    Negotiations
+                  </Link>
                   <button
                     onClick={() => togglePause(item.id)}
                     className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center gap-1"

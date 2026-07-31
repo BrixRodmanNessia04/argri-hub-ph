@@ -12,7 +12,7 @@ export default function GovDashboardPage() {
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-500/15 text-amber-300 border border-amber-500/30">
             DEPARTMENT OF AGRICULTURE &amp; LGU GOVERNANCE
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2 mt-1">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] flex items-center gap-2 mt-1">
             <Landmark className="w-6 h-6 text-amber-400" />
             Government &amp; Regulatory Services Portal
           </h1>

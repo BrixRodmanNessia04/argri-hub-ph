@@ -5,7 +5,7 @@ import CoopLayout from "@/components/CoopLayout";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/lib/db";
 import { getCoopExpectedProduction } from "@/lib/productionRepository";
-import { Sparkles, Sprout, Fish, Anchor, Beef, TrendingUp, Calendar } from "lucide-react";
+import { Sparkles, Sprout, Fish, Anchor, Beef, TrendingUp } from "lucide-react";
 
 export default function CoopForecastsPage() {
   const [stats, setStats] = useState({
@@ -34,7 +34,7 @@ export default function CoopForecastsPage() {
           <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30">
             MEMBER PRODUCTION &amp; YIELD FORECASTING
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight mt-1 flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-teal-400" />
             Cooperative Expected Yield &amp; Catch Forecasts
           </h1>
@@ -44,7 +44,7 @@ export default function CoopForecastsPage() {
         </div>
 
         {/* Multi-Sector Forecast Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs font-bold">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 text-xs font-bold">
           <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-2 shadow-xl">
             <div className="flex items-center gap-2 text-emerald-400">
               <Sprout className="w-4 h-4" />

@@ -113,7 +113,7 @@ export default function FarmerBottomNav() {
       {/* Slide-Up "More" Menu Modal */}
       {isMoreMenuOpen && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 backdrop-blur-xs md:hidden">
-          <div className="w-full bg-white rounded-t-3xl p-5 space-y-4 shadow-2xl max-h-[80vh] overflow-y-auto animate-in slide-in-from-bottom">
+          <div className="w-full bg-white rounded-t-3xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-5 space-y-4 shadow-2xl max-h-[92dvh] overflow-y-auto animate-in slide-in-from-bottom">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <span className="font-extrabold text-slate-900 text-sm">Farmer Menu</span>
               <button
@@ -124,7 +124,7 @@ export default function FarmerBottomNav() {
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 min-[390px]:grid-cols-3 gap-3">
               {moreMenuItems.map((item, idx) => {
                 const Icon = item.icon;
                 const targetRoute = buildRoute(item.href);

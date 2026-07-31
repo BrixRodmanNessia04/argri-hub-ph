@@ -1,21 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
+import { useApplicationContext } from "@/lib/ApplicationContext";
+import { useAppRoute } from "@/lib/navigation";
 import {
   Store,
   ShoppingCart,
   CheckCircle2,
   Plus,
-  Minus,
   Trash2,
   CreditCard,
   MapPin,
-  Tag,
   ShieldCheck,
   Truck,
   Sprout,
   X,
-  Sparkles,
+  Handshake,
+  Fish,
 } from "lucide-react";
 
 interface ProduceItem {
@@ -27,6 +29,8 @@ interface ProduceItem {
   pricePerKg: number;
   grade: string;
   category: string;
+  sector?: "agriculture" | "fisheries";
+  demoListingId?: string;
 }
 
 interface CartItem {
@@ -35,6 +39,8 @@ interface CartItem {
 }
 
 export default function BuyerMarketPage() {
+  const buildRoute = useAppRoute();
+  const { mode } = useApplicationContext();
   const produceCatalog: ProduceItem[] = [
     {
       id: "prod-1",
@@ -45,6 +51,19 @@ export default function BuyerMarketPage() {
       pricePerKg: 40.0,
       grade: "Class A - Premium Head",
       category: "Cruciferous",
+      demoListingId: "list-1",
+    },
+    {
+      id: "prod-fish-1",
+      name: "Dagupan Milkfish (Bangus)",
+      coopName: "Dagupan Aquaculturists Cooperative",
+      origin: "Dagupan, Pangasinan",
+      availableKg: 1200,
+      pricePerKg: 160,
+      grade: "Class A - Chilled",
+      category: "Aquaculture",
+      sector: "fisheries",
+      demoListingId: "list-2",
     },
     {
       id: "prod-2",
@@ -185,7 +204,7 @@ export default function BuyerMarketPage() {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#ecfdf5] text-[#047857] border border-[#a7f3d0]">
-                      <Sprout className="w-3.5 h-3.5" />
+                      {item.sector === "fisheries" ? <Fish className="w-3.5 h-3.5" /> : <Sprout className="w-3.5 h-3.5" />}
                       {item.category}
                     </span>
                     <span className="text-xs text-[#5f7469] font-medium">
@@ -217,22 +236,27 @@ export default function BuyerMarketPage() {
                   </div>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-slate-800 flex items-center gap-2">
+                <div className="mt-5 pt-4 border-t border-[#dce9df] grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => addToCart(item, 50)}
-                    className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="py-2.5 px-4 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-semibold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add 50 kg to Cart</span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => addToCart(item, 100)}
-                    className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition-colors cursor-pointer"
+                  <Link
+                    href={buildRoute(`/buyer/negotiations?${new URLSearchParams({
+                      ...(mode === "demo" && item.demoListingId ? { listingId: item.demoListingId } : {}),
+                      commodityId: item.id,
+                      commodityName: item.name,
+                      sector: item.sector ?? "agriculture",
+                    }).toString()}`)}
+                    className="py-2.5 px-3 rounded-xl bg-white hover:bg-[#ecfdf5] text-[#047857] font-bold text-xs border border-[#a7f3d0] flex items-center justify-center gap-1.5 transition-colors"
                   >
-                    +100kg
-                  </button>
+                    <Handshake className="w-4 h-4" />
+                    Negotiate terms
+                  </Link>
                 </div>
               </div>
             ))}
@@ -339,9 +363,9 @@ export default function BuyerMarketPage() {
       {isCheckoutModalOpen && (
         <div
           id="checkout-modal"
-          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92dvh] overflow-y-auto pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
             <button
               type="button"
               onClick={() => setIsCheckoutModalOpen(false)}

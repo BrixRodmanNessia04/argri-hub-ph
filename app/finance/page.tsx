@@ -12,7 +12,7 @@ export default function FinanceDashboardPage() {
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
             AGRICULTURAL CREDIT &amp; CROP INSURANCE
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2 mt-1">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] flex items-center gap-2 mt-1">
             <Coins className="w-6 h-6 text-emerald-400" />
             Agri-Credit Scoring &amp; Insurance Claims Hub
           </h1>

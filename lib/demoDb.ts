@@ -130,6 +130,7 @@ export interface DemoListing {
   grade: string;
   originProvince: string;
   verifiedStatus: string;
+  reservedKg?: number;
 }
 
 export interface DemoOrder {
@@ -138,8 +139,83 @@ export interface DemoOrder {
   coopName: string;
   weightKg: number;
   totalPrice: number;
-  status: 'ESCROW_PAID' | 'DISPATCHED' | 'DELIVERED';
+  status: 'DRAFT_NEGOTIATED' | 'CONFIRMED' | 'ESCROW_PAID' | 'DISPATCHED' | 'DELIVERED';
   orderedAt: string;
+  negotiationId?: string;
+  unitPrice?: number;
+  deliveryDate?: string;
+  deliveryLocation?: string;
+  paymentTerms?: string;
+  qualityGrade?: string;
+}
+
+export type DemoNegotiationStatus =
+  | 'submitted'
+  | 'under_review'
+  | 'countered'
+  | 'accepted'
+  | 'rejected'
+  | 'withdrawn'
+  | 'expired'
+  | 'converted_to_order';
+
+export interface DemoNegotiation {
+  localId: string;
+  buyerOrganizationId: string;
+  buyerOrganizationName: string;
+  cooperativeOrganizationId: string;
+  cooperativeOrganizationName: string;
+  listingId?: string;
+  commodityId: string;
+  commodityName: string;
+  productSector: 'agriculture' | 'fisheries';
+  status: DemoNegotiationStatus;
+  currentOfferId: string;
+  acceptedOfferId?: string;
+  resultingOrderId?: string;
+  initiatedByRole: 'buyer' | 'coop';
+  reservationRule: 'on_accept' | 'on_confirmation' | 'none';
+  expiresAt: string;
+  lastActivityAt: string;
+  version: number;
+  createdAt: string;
+}
+
+export interface DemoNegotiationOffer {
+  localId: string;
+  negotiationId: string;
+  offerNumber: number;
+  createdByRole: 'buyer' | 'coop';
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  deliveryDate: string;
+  deliveryLocation: string;
+  paymentTerms: string;
+  qualityGrade: string;
+  qualityNotes?: string;
+  notes?: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'superseded' | 'withdrawn' | 'expired';
+  createdAt: string;
+}
+
+export interface DemoNegotiationMessage {
+  localId: string;
+  negotiationId: string;
+  senderRole: 'buyer' | 'coop';
+  message: string;
+  relatedOfferId?: string;
+  createdAt: string;
+}
+
+export interface DemoNegotiationEvent {
+  localId: string;
+  negotiationId: string;
+  actorRole?: 'buyer' | 'coop';
+  eventType: string;
+  offerId?: string;
+  orderId?: string;
+  createdAt: string;
 }
 
 const demoDb = new Dexie('agrihub-demo') as Dexie & {
@@ -157,6 +233,10 @@ const demoDb = new Dexie('agrihub-demo') as Dexie & {
   demoCoopSubmissions: EntityTable<DemoCoopSubmission, 'localId'>;
   demoListings: EntityTable<DemoListing, 'localId'>;
   demoOrders: EntityTable<DemoOrder, 'localId'>;
+  demoNegotiations: EntityTable<DemoNegotiation, 'localId'>;
+  demoNegotiationOffers: EntityTable<DemoNegotiationOffer, 'localId'>;
+  demoNegotiationMessages: EntityTable<DemoNegotiationMessage, 'localId'>;
+  demoNegotiationEvents: EntityTable<DemoNegotiationEvent, 'localId'>;
 };
 
 demoDb.version(2).stores({
@@ -179,9 +259,17 @@ demoDb.version(3).stores({
   demoFisheriesDocuments: 'localId, documentType, verificationStatus',
 });
 
+demoDb.version(4).stores({
+  demoNegotiations: 'localId, buyerOrganizationId, cooperativeOrganizationId, listingId, status, lastActivityAt',
+  demoNegotiationOffers: 'localId, negotiationId, offerNumber, status, createdAt',
+  demoNegotiationMessages: 'localId, negotiationId, createdAt',
+  demoNegotiationEvents: 'localId, negotiationId, createdAt',
+});
+
 export async function seedDemoDatabase() {
   const count = await demoDb.demoFarms.count();
-  if (count > 0) return;
+  const negotiationCount = await demoDb.demoNegotiations.count();
+  if (count > 0 && negotiationCount > 0) return;
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -259,6 +347,146 @@ export async function seedDemoDatabase() {
   await demoDb.demoOrders.bulkPut([
     { localId: 'ord-1', listingTitle: 'Fresh Benguet Highland Cabbage (Class A)', coopName: 'Benguet Agriculture Cooperative', weightKg: 500, totalPrice: 22500, status: 'ESCROW_PAID', orderedAt: today },
   ]);
+
+  const agricultureNegotiationId = 'demo-neg-agri-1';
+  const fisheriesNegotiationId = 'demo-neg-fish-1';
+  await demoDb.demoNegotiations.bulkPut([
+    {
+      localId: agricultureNegotiationId,
+      buyerOrganizationId: 'demo-org-buyer',
+      buyerOrganizationName: 'Metro Supermarkets Procurement',
+      cooperativeOrganizationId: 'demo-org-coop',
+      cooperativeOrganizationName: 'Benguet Agriculture Cooperative',
+      listingId: 'list-1',
+      commodityId: 'VEG-CAB-01',
+      commodityName: 'Fresh Benguet Highland Cabbage',
+      productSector: 'agriculture',
+      status: 'countered',
+      currentOfferId: 'demo-offer-agri-2',
+      initiatedByRole: 'buyer',
+      reservationRule: 'on_confirmation',
+      expiresAt: new Date(Date.now() + 5 * 86400000).toISOString(),
+      lastActivityAt: new Date().toISOString(),
+      version: 2,
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+    },
+    {
+      localId: fisheriesNegotiationId,
+      buyerOrganizationId: 'demo-org-buyer',
+      buyerOrganizationName: 'Metro Supermarkets Procurement',
+      cooperativeOrganizationId: 'demo-org-coop',
+      cooperativeOrganizationName: 'Dagupan Aquaculturists Cooperative',
+      listingId: 'list-2',
+      commodityId: 'FISH-BANGUS-01',
+      commodityName: 'Dagupan Milkfish (Bangus)',
+      productSector: 'fisheries',
+      status: 'submitted',
+      currentOfferId: 'demo-offer-fish-1',
+      initiatedByRole: 'buyer',
+      reservationRule: 'on_confirmation',
+      expiresAt: new Date(Date.now() + 6 * 86400000).toISOString(),
+      lastActivityAt: new Date(Date.now() - 3600000).toISOString(),
+      version: 1,
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+    },
+  ]);
+  await demoDb.demoNegotiationOffers.bulkPut([
+    {
+      localId: 'demo-offer-agri-1',
+      negotiationId: agricultureNegotiationId,
+      offerNumber: 1,
+      createdByRole: 'buyer',
+      quantity: 500,
+      unit: 'kg',
+      unitPrice: 42,
+      deliveryDate: '2026-08-08',
+      deliveryLocation: 'Quezon City Cold Storage Hub',
+      paymentTerms: 'Net 15 days after accepted delivery',
+      qualityGrade: 'Class A',
+      qualityNotes: 'Uniform heads, maximum 2% trimming loss',
+      notes: 'Weekly supply trial for three branches.',
+      status: 'superseded',
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+    },
+    {
+      localId: 'demo-offer-agri-2',
+      negotiationId: agricultureNegotiationId,
+      offerNumber: 2,
+      createdByRole: 'coop',
+      quantity: 450,
+      unit: 'kg',
+      unitPrice: 44,
+      deliveryDate: '2026-08-09',
+      deliveryLocation: 'Quezon City Cold Storage Hub',
+      paymentTerms: '50% on confirmation, balance Net 7 after delivery',
+      qualityGrade: 'Class A',
+      qualityNotes: 'Pre-cooled and packed in ventilated crates',
+      notes: 'Available volume after existing reservations is 450 kg.',
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      localId: 'demo-offer-fish-1',
+      negotiationId: fisheriesNegotiationId,
+      offerNumber: 1,
+      createdByRole: 'buyer',
+      quantity: 300,
+      unit: 'kg',
+      unitPrice: 155,
+      deliveryDate: '2026-08-07',
+      deliveryLocation: 'Navotas Seafood Consolidation Hub',
+      paymentTerms: 'Payment on verified cold-chain receipt',
+      qualityGrade: 'Class A',
+      qualityNotes: '400–600 g per fish, chilled at 0–4°C',
+      notes: 'Please confirm harvest and icing schedule.',
+      status: 'pending',
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+    },
+  ]);
+  await demoDb.demoNegotiationMessages.bulkPut([
+    {
+      localId: 'demo-message-agri-1',
+      negotiationId: agricultureNegotiationId,
+      senderRole: 'buyer',
+      message: 'Can the cooperative include reusable ventilated crates?',
+      relatedOfferId: 'demo-offer-agri-1',
+      createdAt: new Date(Date.now() - 7200000).toISOString(),
+    },
+    {
+      localId: 'demo-message-agri-2',
+      negotiationId: agricultureNegotiationId,
+      senderRole: 'coop',
+      message: 'Crates are included in the counteroffer and collected on the next delivery.',
+      relatedOfferId: 'demo-offer-agri-2',
+      createdAt: new Date().toISOString(),
+    },
+  ]);
+  await demoDb.demoNegotiationEvents.bulkPut([
+    {
+      localId: 'demo-event-agri-1',
+      negotiationId: agricultureNegotiationId,
+      actorRole: 'buyer',
+      eventType: 'negotiation_submitted',
+      offerId: 'demo-offer-agri-1',
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+    },
+    {
+      localId: 'demo-event-agri-2',
+      negotiationId: agricultureNegotiationId,
+      actorRole: 'coop',
+      eventType: 'counteroffer_sent',
+      offerId: 'demo-offer-agri-2',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      localId: 'demo-event-fish-1',
+      negotiationId: fisheriesNegotiationId,
+      actorRole: 'buyer',
+      eventType: 'negotiation_submitted',
+      offerId: 'demo-offer-fish-1',
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+    },
+  ]);
 }
 
 export async function resetDemoDatabase() {
@@ -276,6 +504,10 @@ export async function resetDemoDatabase() {
   await demoDb.demoCoopSubmissions.clear();
   await demoDb.demoListings.clear();
   await demoDb.demoOrders.clear();
+  await demoDb.demoNegotiations.clear();
+  await demoDb.demoNegotiationOffers.clear();
+  await demoDb.demoNegotiationMessages.clear();
+  await demoDb.demoNegotiationEvents.clear();
   await seedDemoDatabase();
 }
 

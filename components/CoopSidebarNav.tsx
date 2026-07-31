@@ -24,6 +24,7 @@ import {
   BarChart3,
   ShieldCheck,
   Settings,
+  Handshake,
 } from "lucide-react";
 
 export default function CoopSidebarNav() {
@@ -41,6 +42,7 @@ export default function CoopSidebarNav() {
     { href: "/coop/inventory", label: "Coop Warehouse Stock", icon: Warehouse },
     { href: "/coop/listings", label: "Marketplace Listings", icon: Store },
     { href: "/coop/orders", label: "B2B Buyer Orders", icon: ShoppingCart },
+    { href: "/coop/negotiations", label: "Commercial Negotiations", icon: Handshake },
     { href: "/coop/fulfillment", label: "Cold-Chain Dispatch", icon: Truck },
     { href: "/coop/payments", label: "PayMongo Escrow", icon: CreditCard },
     { href: "/coop/payouts", label: "Member Payouts", icon: Coins },
@@ -68,7 +70,10 @@ export default function CoopSidebarNav() {
           {links.map((link) => {
             const Icon = link.icon;
             const targetRoute = buildRoute(link.href);
-            const isActive = pathname === targetRoute || pathname === link.href;
+            const isActive =
+              pathname === targetRoute ||
+              pathname.startsWith(`${targetRoute}/`) ||
+              pathname === link.href;
 
             return (
               <Link

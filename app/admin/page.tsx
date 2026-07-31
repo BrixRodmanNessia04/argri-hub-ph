@@ -2,7 +2,7 @@
 
 import React from "react";
 import AdminSidebarNav from "@/components/AdminSidebarNav";
-import { ShieldCheck, Building2, Users, ShoppingCart, AlertTriangle, RefreshCw } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 export default function AdminDashboardPage() {
   return (
@@ -22,7 +22,7 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
           <div className="bg-white border border-[#dce9df] rounded-2xl p-5 shadow-xs">
             <span className="text-xs font-medium text-[#5f7469]">Verified Cooperatives</span>
             <p className="text-2xl font-extrabold text-[#163025] mt-3">12 Coops</p>

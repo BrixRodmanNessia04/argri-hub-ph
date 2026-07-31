@@ -8,7 +8,7 @@ import {
   LayoutDashboard,
   Users,
   Scissors,
-  ShoppingCart,
+  Handshake,
   Menu,
 } from "lucide-react";
 
@@ -24,7 +24,7 @@ export default function CoopBottomNav({ onOpenDrawer }: CoopBottomNavProps) {
     { href: "/coop/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/coop/farmers", label: "Farmers", icon: Users },
     { href: "/coop/harvests", label: "Harvests", icon: Scissors },
-    { href: "/coop/orders", label: "Orders", icon: ShoppingCart },
+    { href: "/coop/negotiations", label: "Offers", icon: Handshake },
   ];
 
   return (

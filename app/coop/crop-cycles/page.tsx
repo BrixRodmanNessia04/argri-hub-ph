@@ -17,7 +17,7 @@ export default function CoopCropCyclesPage() {
           <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30">
             MEMBER CROP MONITORING
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight mt-1">
             Active Member Crop Cycles ({cycles.length})
           </h1>
         </div>

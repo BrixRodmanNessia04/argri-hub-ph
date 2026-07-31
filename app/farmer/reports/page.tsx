@@ -4,7 +4,7 @@ import React from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/lib/db";
 import FarmerSubNav from "@/components/FarmerSubNav";
-import { BarChart3, TrendingUp, TrendingDown, Scissors, DollarSign } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 
 export default function FarmerReportsPage() {
   const sales = useLiveQuery(() => db.sales.filter((s) => !s.isDeleted).toArray(), []) || [];
@@ -34,7 +34,7 @@ export default function FarmerReportsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
             <span className="text-xs font-bold text-slate-500">Gross Sales Income</span>
             <p className="text-xl font-extrabold text-emerald-700 mt-2">

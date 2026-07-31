@@ -62,7 +62,7 @@ export default function CoopHarvestsApprovalPage() {
           <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30">
             HARVEST SUBMISSION REVIEW QUEUE
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight mt-1">
             Harvest Approval &amp; Quality Grading
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
@@ -157,8 +157,8 @@ export default function CoopHarvestsApprovalPage() {
 
       {/* FULL-SCREEN / MOBILE HARVEST REVIEW SHEET */}
       {reviewItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-5 shadow-2xl animate-in fade-in max-h-[90vh] overflow-y-auto text-xs">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/80 backdrop-blur-sm p-0 sm:p-4">
+          <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl animate-in fade-in max-h-[92dvh] overflow-y-auto text-xs pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
                 <h3 className="font-extrabold text-base text-white">Review Harvest Submission</h3>

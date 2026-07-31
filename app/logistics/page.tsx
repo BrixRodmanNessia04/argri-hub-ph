@@ -12,7 +12,7 @@ export default function LogisticsDashboardPage() {
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-blue-500/15 text-blue-300 border border-blue-500/30">
             COLD-CHAIN &amp; FLEET MANAGEMENT
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2 mt-1">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] flex items-center gap-2 mt-1">
             <Truck className="w-6 h-6 text-blue-400" />
             Refrigerated Fleet &amp; Transport Logistics Hub
           </h1>

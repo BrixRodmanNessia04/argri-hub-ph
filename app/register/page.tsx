@@ -195,7 +195,7 @@ export default function RegisterPage() {
             {/* STEP 3 */}
             {step === 3 && (
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[#5f7469] mb-1">Province *</label>
                     <input

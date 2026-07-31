@@ -42,7 +42,7 @@ export default function ProducerDashboardPage() {
                 PRODUCER VALUE CHAIN HUB
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1.5 flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight mt-1.5 flex items-center gap-2">
               <Sprout className="w-6 h-6 text-emerald-400" />
               Agriculture &amp; Fisheries Producer Portal
             </h1>

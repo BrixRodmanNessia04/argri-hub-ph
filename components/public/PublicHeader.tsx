@@ -91,7 +91,7 @@ export default function PublicHeader() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">
           <div className="fixed inset-0 bg-[#163025]/60 backdrop-blur-xs" onClick={() => setMobileMenuOpen(false)} />
-          <div className="relative w-80 bg-white border-r border-[#dce9df] p-6 flex flex-col justify-between z-50 space-y-6">
+          <div className="relative w-80 max-w-[88vw] bg-white border-r border-[#dce9df] p-5 sm:p-6 flex flex-col justify-between z-50 space-y-6 overflow-y-auto">
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-[#dce9df] pb-4">
                 <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">

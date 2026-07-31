@@ -1,6 +1,6 @@
 "use client";
 
-import { useApplicationContext, ApplicationMode, WorkspaceRole } from "./ApplicationContext";
+import { useApplicationContext, ApplicationMode } from "./ApplicationContext";
 
 /**
  * Builds a context-aware application route based on current mode ("production" | "demo").
@@ -33,6 +33,11 @@ export function buildAppRoute(path: string, mode: ApplicationMode = "production"
  * React hook that returns a route builder function bound to the current ApplicationContext.
  */
 export function useAppRoute() {
-  const { mode } = useApplicationContext();
-  return (path: string) => buildAppRoute(path, mode);
+  const { mode, role } = useApplicationContext();
+  return (path: string) => {
+    if (mode === "demo" && role === "buyer" && (path === "/market" || path.startsWith("/market/"))) {
+      return `/demo/buyer/market${path.slice("/market".length)}`;
+    }
+    return buildAppRoute(path, mode);
+  };
 }

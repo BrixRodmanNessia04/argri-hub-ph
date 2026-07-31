@@ -24,6 +24,7 @@ import CoopUsersPage from "@/app/coop/users/page";
 import CoopSettingsPage from "@/app/coop/settings/page";
 import CoopProfilePage from "@/app/coop/profile/page";
 import CoopAiPage from "@/app/coop/ai/page";
+import CoopNegotiationsPage from "@/app/coop/negotiations/[[...slug]]/page";
 
 export default function DemoCoopCatchAllPage({
   params,
@@ -54,6 +55,8 @@ export default function DemoCoopCatchAllPage({
         return <CoopListingsPage />;
       case "orders":
         return <CoopOrdersPage />;
+      case "negotiations":
+        return <CoopNegotiationsPage params={Promise.resolve({ slug: slug.slice(1) })} />;
       case "fulfillment":
         return <CoopFulfillmentPage />;
       case "payments":

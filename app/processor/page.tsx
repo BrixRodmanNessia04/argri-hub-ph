@@ -12,7 +12,7 @@ export default function ProcessorDashboardPage() {
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-purple-500/15 text-purple-300 border border-purple-500/30">
             PROCESSING &amp; VALUE ADDITION HUB
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2 mt-1">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] flex items-center gap-2 mt-1">
             <Factory className="w-6 h-6 text-purple-400" />
             Food Processing &amp; Packaging Facility Management
           </h1>

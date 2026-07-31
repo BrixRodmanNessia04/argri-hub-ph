@@ -9,8 +9,6 @@ import {
   Building2,
   LayoutDashboard,
   Users,
-  Tractor,
-  Sprout,
   Scissors,
   Layers,
   Sparkles,
@@ -18,16 +16,13 @@ import {
   Store,
   ShoppingCart,
   Truck,
-  CreditCard,
   Coins,
-  Tag,
-  MessageSquare,
   BarChart3,
-  ShieldCheck,
   Settings,
   Bot,
   User,
   LogOut,
+  Handshake,
 } from "lucide-react";
 
 interface CoopDrawerProps {
@@ -73,6 +68,7 @@ export default function CoopDrawer({ isOpen, onClose }: CoopDrawerProps) {
     {
       title: "Commerce & Logistics",
       items: [
+        { href: "/coop/negotiations", label: "Commercial Negotiations", icon: Handshake },
         { href: "/coop/orders", label: "B2B Orders", icon: ShoppingCart },
         { href: "/coop/fulfillment", label: "Reefer Dispatch", icon: Truck },
         { href: "/coop/payouts", label: "Member Payouts", icon: Coins },
