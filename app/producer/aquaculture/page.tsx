@@ -49,7 +49,7 @@ export default function AquacultureOperationsPage() {
           <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30">
             AQUACULTURE &amp; BRACKISHWATER PONDS
           </span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#163025] tracking-tight mt-1 flex items-center gap-2">
             <Anchor className="w-6 h-6 text-teal-400" />
             Pond &amp; Cage Stocking Operations
           </h1>
@@ -67,31 +67,31 @@ export default function AquacultureOperationsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* CREATE AQUACULTURE POND STOCKING FORM */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-4">
-            <h2 className="text-sm font-extrabold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+          <div className="bg-white border border-[#dce9df] rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+            <h2 className="text-sm font-extrabold text-[#163025] flex items-center gap-2 border-b border-[#dce9df] pb-3">
               <Waves className="w-4 h-4 text-teal-400" /> Start Aquaculture Stocking Batch
             </h2>
 
             <form onSubmit={handleCreateCycle} className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-bold mb-1">Production Site / Pond ID *</label>
+                  <label className="block text-[#5f7469] font-bold mb-1">Production Site / Pond ID *</label>
                   <input
                     type="text"
                     value={siteId}
                     onChange={(e) => setSiteId(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 font-bold text-white"
+                    className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-bold text-white"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-bold mb-1">Species Stocked *</label>
+                  <label className="block text-[#5f7469] font-bold mb-1">Species Stocked *</label>
                   <input
                     type="text"
                     value={speciesName}
                     onChange={(e) => setSpeciesName(e.target.value)}
                     placeholder="e.g. Milkfish (Bangus), Tilapia, Vannamei Shrimp"
-                    className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 font-bold text-white"
+                    className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-bold text-white"
                     required
                   />
                 </div>
@@ -99,28 +99,28 @@ export default function AquacultureOperationsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-bold mb-1">Total Fingerlings Stocked *</label>
+                  <label className="block text-[#5f7469] font-bold mb-1">Total Fingerlings Stocked *</label>
                   <input
                     type="number"
                     value={totalStockCount}
                     onChange={(e) => setTotalStockCount(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 font-bold text-teal-400"
+                    className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-bold text-teal-400"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-bold mb-1">Density (per sq. meter)</label>
+                  <label className="block text-[#5f7469] font-bold mb-1">Density (per sq. meter)</label>
                   <input
                     type="number"
                     value={stockingDensity}
                     onChange={(e) => setStockingDensity(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-200"
+                    className="w-full p-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025]"
                   />
                 </div>
               </div>
 
               {/* WATER TELEMETRY */}
-              <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+              <div className="p-3.5 rounded-2xl bg-[#f6fbf7] border border-[#dce9df] space-y-3">
                 <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">
                   Water Quality Telemetry Telemetry
                 </span>
@@ -133,7 +133,7 @@ export default function AquacultureOperationsPage() {
                       step="0.1"
                       value={waterSalinity}
                       onChange={(e) => setWaterSalinity(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-teal-300 font-bold"
+                      className="w-full p-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-teal-300 font-bold"
                     />
                   </div>
                   <div>
@@ -143,7 +143,7 @@ export default function AquacultureOperationsPage() {
                       step="0.1"
                       value={waterTemp}
                       onChange={(e) => setWaterTemp(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-amber-300 font-bold"
+                      className="w-full p-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-amber-300 font-bold"
                     />
                   </div>
                 </div>
@@ -156,7 +156,7 @@ export default function AquacultureOperationsPage() {
                       step="0.1"
                       value={phLevel}
                       onChange={(e) => setPhLevel(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-emerald-300 font-bold"
+                      className="w-full p-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-emerald-300 font-bold"
                     />
                   </div>
                   <div>
@@ -166,7 +166,7 @@ export default function AquacultureOperationsPage() {
                       step="0.1"
                       value={dissolvedOxygen}
                       onChange={(e) => setDissolvedOxygen(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-blue-300 font-bold"
+                      className="w-full p-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-blue-300 font-bold"
                     />
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export default function AquacultureOperationsPage() {
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 mt-2"
+                className="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-[#163025] font-bold text-xs shadow-md flex items-center justify-center gap-2 mt-2"
               >
                 <Save className="w-4 h-4" /> Start Aquaculture Batch (Offline First)
               </button>
@@ -182,24 +182,24 @@ export default function AquacultureOperationsPage() {
           </div>
 
           {/* ACTIVE AQUACULTURE BATCHES */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 text-xs">
-            <h2 className="text-sm font-extrabold text-white flex items-center gap-2">
+          <div className="bg-white border border-[#dce9df] rounded-2xl p-5 sm:p-6 shadow-xl space-y-4 text-xs">
+            <h2 className="text-sm font-extrabold text-[#163025] flex items-center gap-2">
               <Anchor className="w-4 h-4 text-teal-400" /> Active Aquaculture Cycles ({cycles.length})
             </h2>
 
             {cycles.length === 0 ? (
-              <p className="text-slate-500 text-center py-4">No aquaculture cycles active yet.</p>
+              <p className="text-[#9db5a5] text-center py-4">No aquaculture cycles active yet.</p>
             ) : (
               <div className="space-y-3">
                 {cycles.map((c) => (
-                  <div key={c.localId} className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                  <div key={c.localId} className="p-4 rounded-2xl bg-[#f6fbf7] border border-[#dce9df] space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-white text-sm">{c.speciesName}</span>
+                      <span className="font-extrabold text-[#163025] text-sm">{c.speciesName}</span>
                       <span className="px-2 py-0.5 rounded-full bg-teal-950 text-teal-400 border border-teal-800 text-[10px] font-extrabold">
                         {c.status}
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-400 font-semibold pt-1 border-t border-slate-800/60">
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-[#5f7469] font-semibold pt-1 border-t border-[#dce9df]">
                       <span>Pond: {c.siteId}</span>
                       <span className="text-emerald-400 font-bold">{c.totalStockCount.toLocaleString()} fingerlings</span>
                       <span>Salinity: {c.waterSalinityPpt} ppt</span>

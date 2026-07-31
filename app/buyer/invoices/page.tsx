@@ -11,14 +11,14 @@ export default function BuyerInvoicesPage() {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-57px)] bg-slate-950 text-slate-100 flex">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] flex">
       <BuyerSidebarNav />
       <main className="flex-1 p-6 md:p-8 overflow-y-auto space-y-6">
         <h1 className="text-2xl font-extrabold text-white">Procurement Tax Invoices</h1>
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white border border-[#dce9df] rounded-2xl shadow-xl overflow-hidden">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
-              <tr className="border-b border-slate-800 text-xs text-slate-400 uppercase tracking-wider bg-slate-950/60">
+              <tr className="border-b border-[#dce9df] text-xs text-slate-400 uppercase tracking-wider bg-white/60">
                 <th className="py-3.5 px-6 font-semibold">Invoice No</th>
                 <th className="py-3.5 px-6 font-semibold">Order Ref</th>
                 <th className="py-3.5 px-6 font-semibold">Amount</th>
@@ -27,7 +27,7 @@ export default function BuyerInvoicesPage() {
             </thead>
             <tbody className="divide-y divide-slate-800/60">
               {invoices.map((inv) => (
-                <tr key={inv.id} className="hover:bg-slate-800/40">
+                <tr key={inv.id} className="hover:bg-[#f6fbf7]/40">
                   <td className="py-4 px-6 font-mono font-bold text-white">{inv.id}</td>
                   <td className="py-4 px-6 font-mono text-teal-400">{inv.orderRef}</td>
                   <td className="py-4 px-6 font-extrabold text-emerald-400">₱{inv.amount.toLocaleString()}</td>

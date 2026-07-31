@@ -52,7 +52,7 @@ export default function CoopSidebarNav() {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-[#dce9df] hidden lg:flex flex-col justify-between p-5 shrink-0 min-h-[calc(100vh-57px)] sticky top-[57px]">
+    <aside className="w-64 bg-white border-r border-[#dce9df] hidden lg:flex flex-col justify-between p-5 shrink-0 min-h-screen sticky top-0">
       <div className="space-y-6">
         <div className="flex items-center gap-2.5 pb-4 border-b border-[#dce9df]">
           <div className="p-2 rounded-xl bg-[#059669] text-white shadow-xs">

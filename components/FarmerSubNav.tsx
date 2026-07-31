@@ -49,7 +49,8 @@ export default function FarmerSubNav() {
 
   return (
     <>
-      <div className="bg-emerald-900 border-b border-emerald-800 text-emerald-100 hidden md:block sticky top-[57px] z-30 shadow-md">
+      {/* Desktop sub-nav — sticky at top-0 since no global app header exists */}
+      <div className="bg-white border-b border-[#dce9df] hidden md:block sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-none">
             {navLinks.map((item) => {
@@ -63,8 +64,8 @@ export default function FarmerSubNav() {
                   href={targetRoute}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
                     isActive
-                      ? "bg-white text-emerald-950 shadow-sm"
-                      : "text-emerald-100 hover:bg-emerald-800/80 hover:text-white"
+                      ? "bg-[#059669] text-white shadow-xs"
+                      : "text-[#5f7469] hover:bg-[#ecfdf5] hover:text-[#047857]"
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />

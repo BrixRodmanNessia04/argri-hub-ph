@@ -12,7 +12,7 @@ export default function BuyerDashboardPage() {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-57px)] bg-slate-950 text-slate-100 flex">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] flex">
       <BuyerSidebarNav />
 
       <main className="flex-1 p-6 md:p-8 overflow-y-auto space-y-8">
@@ -36,27 +36,27 @@ export default function BuyerDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <div className="bg-white border border-[#dce9df] rounded-2xl p-5 shadow-xl">
             <span className="text-xs font-medium text-slate-400">Active Wholesale Orders</span>
             <p className="text-2xl font-extrabold text-white mt-3">2 Orders</p>
             <p className="text-xs text-blue-400 mt-1">Cold-chain delivery in progress</p>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <div className="bg-white border border-[#dce9df] rounded-2xl p-5 shadow-xl">
             <span className="text-xs font-medium text-slate-400">Total Sourced Volume</span>
             <p className="text-2xl font-extrabold text-white mt-3">450 kg</p>
             <p className="text-xs text-slate-400 mt-1">Direct from cooperatives</p>
           </div>
 
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <div className="bg-white border border-[#dce9df] rounded-2xl p-5 shadow-xl">
             <span className="text-xs font-medium text-slate-400">PayMongo Escrow Balance</span>
             <p className="text-2xl font-extrabold text-emerald-400 mt-3">₱20,250.00</p>
             <p className="text-xs text-emerald-400 mt-1 font-medium">Protected until arrival</p>
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
-          <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+        <div className="bg-white border border-[#dce9df] rounded-2xl shadow-xl overflow-hidden">
+          <div className="p-6 border-b border-[#dce9df] flex items-center justify-between">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
               <ShoppingCart className="w-5 h-5 text-blue-400" />
               Active Orders Overview
@@ -68,7 +68,7 @@ export default function BuyerDashboardPage() {
 
           <div className="divide-y divide-slate-800/60 text-sm">
             {activeOrders.map((ord) => (
-              <div key={ord.id} className="p-4 px-6 flex items-center justify-between hover:bg-slate-800/40">
+              <div key={ord.id} className="p-4 px-6 flex items-center justify-between hover:bg-[#f6fbf7]/40">
                 <div>
                   <span className="font-mono text-teal-400 text-xs font-bold">{ord.id}</span>
                   <h3 className="font-bold text-white mt-0.5">{ord.produce}</h3>

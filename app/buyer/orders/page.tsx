@@ -12,7 +12,7 @@ export default function BuyerOrdersPage() {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-57px)] bg-slate-950 text-slate-100 flex">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] flex">
       <BuyerSidebarNav />
 
       <main className="flex-1 p-6 md:p-8 overflow-y-auto space-y-6">
@@ -25,10 +25,10 @@ export default function BuyerOrdersPage() {
           </h1>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white border border-[#dce9df] rounded-2xl shadow-xl overflow-hidden">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
-              <tr className="border-b border-slate-800 text-xs text-slate-400 uppercase tracking-wider bg-slate-950/60">
+              <tr className="border-b border-[#dce9df] text-xs text-slate-400 uppercase tracking-wider bg-white/60">
                 <th className="py-3.5 px-6 font-semibold">Order Ref</th>
                 <th className="py-3.5 px-6 font-semibold">Produce &amp; Volume</th>
                 <th className="py-3.5 px-6 font-semibold">Total Cost</th>
@@ -39,7 +39,7 @@ export default function BuyerOrdersPage() {
             </thead>
             <tbody className="divide-y divide-slate-800/60">
               {orders.map((ord) => (
-                <tr key={ord.id} className="hover:bg-slate-800/40">
+                <tr key={ord.id} className="hover:bg-[#f6fbf7]/40">
                   <td className="py-4 px-6 font-mono font-bold text-teal-400">{ord.id}</td>
                   <td className="py-4 px-6 font-semibold text-white">{ord.qtyKg} kg {ord.produce}</td>
                   <td className="py-4 px-6 font-extrabold text-emerald-400">₱{ord.total.toLocaleString()}</td>
@@ -52,7 +52,7 @@ export default function BuyerOrdersPage() {
                   <td className="py-4 px-6 text-right">
                     <Link
                       href={`/buyer/orders/${ord.id}`}
-                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold inline-flex items-center gap-1"
+                      className="px-3 py-1.5 rounded-xl bg-[#f6fbf7] hover:bg-slate-700 text-slate-200 text-xs font-bold inline-flex items-center gap-1"
                     >
                       <Eye className="w-3.5 h-3.5" /> View Order
                     </Link>

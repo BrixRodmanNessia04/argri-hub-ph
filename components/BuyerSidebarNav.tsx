@@ -34,15 +34,15 @@ export default function BuyerSidebarNav() {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 hidden lg:flex flex-col justify-between p-5 shrink-0 min-h-[calc(100vh-57px)] sticky top-[57px]">
+    <aside className="w-64 bg-white border-r border-[#dce9df] hidden lg:flex flex-col justify-between p-5 shrink-0 min-h-screen sticky top-0">
       <div className="space-y-6">
-        <div className="flex items-center gap-2.5 pb-4 border-b border-slate-800">
-          <div className="p-2 rounded-xl bg-blue-500/15 text-blue-400 border border-blue-500/30">
+        <div className="flex items-center gap-2.5 pb-4 border-b border-[#dce9df]">
+          <div className="p-2 rounded-xl bg-[#ecfdf5] text-[#059669] border border-[#a7f3d0]">
             <Store className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="font-extrabold text-sm text-white">Metro Supermarkets</h2>
-            <p className="text-[11px] text-blue-400 font-semibold">B2B Procurement Portal</p>
+            <h2 className="font-extrabold text-sm text-[#163025]">Metro Supermarkets</h2>
+            <p className="text-[11px] text-[#059669] font-semibold">B2B Procurement Portal</p>
           </div>
         </div>
 
@@ -56,11 +56,11 @@ export default function BuyerSidebarNav() {
                 href={item.href}
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-all ${
                   isActive
-                    ? "bg-blue-500/15 text-blue-300 border border-blue-500/30 font-bold"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                    ? "bg-[#059669] text-white font-bold shadow-xs"
+                    : "text-[#5f7469] hover:bg-[#ecfdf5] hover:text-[#047857]"
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-blue-400" : "text-slate-400"}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-[#9db5a5]"}`} />
                 <span className="truncate">{item.label}</span>
               </Link>
             );

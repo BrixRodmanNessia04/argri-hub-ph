@@ -30,14 +30,14 @@ export function AggregateForm({
   };
 
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl">
+    <div className="bg-white border border-[#dce9df] rounded-2xl p-6 shadow-xs">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-            <Layers className="w-5 h-5 text-emerald-400" />
+          <h3 className="text-lg font-bold text-[#163025] flex items-center gap-2">
+            <Layers className="w-5 h-5 text-[#059669]" />
             Pool &amp; Aggregate Harvests
           </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-[#5f7469] mt-0.5">
             Bundle member crops into a bulk B2B Marketplace Listing
           </p>
         </div>
@@ -48,7 +48,7 @@ export function AggregateForm({
           value={selectedCrop}
           onChange={(e) => setSelectedCrop(e.target.value)}
           disabled={isPending}
-          className="flex-1 px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500"
+          className="flex-1 px-4 py-3 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] text-sm focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669]"
         >
           {availableCrops.map((crop) => (
             <option key={crop} value={crop}>

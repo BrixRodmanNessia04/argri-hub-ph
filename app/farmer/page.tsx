@@ -200,29 +200,29 @@ export default function FarmerPwaMainPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 pb-28 font-sans">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] pb-28 font-sans">
       <FarmerSubNav />
 
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 sticky top-14 z-30 shadow-sm">
+      {/* Dashboard sub-header — sticky below the sub-nav (40px height) */}
+      <header className="bg-white border-b border-[#dce9df] px-4 py-3 sticky top-10 z-20 shadow-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-600 text-white shadow-sm">
+            <div className="p-2 rounded-xl bg-[#059669] text-white shadow-xs">
               <Tractor className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="font-extrabold text-base text-slate-900 tracking-tight">
+              <h1 className="font-extrabold text-base text-[#163025] tracking-tight">
                 Farmer Operations &amp; Inventory Hub
               </h1>
-              <p className="text-xs font-semibold text-emerald-700">
-                Light Theme • Offline-First PWA
+              <p className="text-xs font-semibold text-[#059669]">
+                Offline-First PWA
               </p>
             </div>
           </div>
 
           {/* Header Badges */}
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold border border-gray-300">
+            <span className="px-2.5 py-1 rounded-full bg-[#ecfdf5] text-[#047857] text-xs font-bold border border-[#a7f3d0]">
               {farmerName}
             </span>
 
@@ -263,18 +263,18 @@ export default function FarmerPwaMainPage() {
           {/* LEFT COLUMN */}
           <div className="md:col-span-4 space-y-5">
             {/* 1. AI SMART LOGGER */}
-            <section className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+            <section className="bg-white border border-[#dce9df] rounded-2xl p-5 shadow-xs">
               <div className="flex items-center justify-between mb-3">
                 <Link href="/farmer/quick-capture" className="flex items-center gap-2 group">
                   <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 group-hover:bg-emerald-200">
                     <Sparkles className="w-4 h-4" />
                   </div>
-                  <h2 className="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                  <h2 className="text-base font-bold text-[#163025] group-hover:text-[#059669] transition-colors">
                     AI Smart Logger
                   </h2>
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600" />
+                  <ChevronRight className="w-4 h-4 text-[#9db5a5] group-hover:text-[#059669]" />
                 </Link>
-                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-[11px] font-bold text-[#047857] bg-[#ecfdf5] px-2.5 py-0.5 rounded-full border border-[#a7f3d0]">
                   Tagalog / English
                 </span>
               </div>
@@ -286,7 +286,7 @@ export default function FarmerPwaMainPage() {
                   value={smartInput}
                   onChange={(e) => setSmartInput(e.target.value)}
                   placeholder="Log activity, costs, or sales... (e.g., 'Bumili ng abono for ₱500')"
-                  className="w-full p-3.5 rounded-xl bg-slate-50 border border-gray-300 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 font-medium"
+                  className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] placeholder:text-[#9db5a5] text-sm focus:outline-none focus:ring-2 focus:ring-[#059669]/30 focus:border-[#059669] font-medium"
                 />
 
                 <div className="flex items-center justify-end gap-2">
@@ -296,7 +296,7 @@ export default function FarmerPwaMainPage() {
                     className={`p-2.5 rounded-xl border font-semibold text-xs flex items-center gap-1.5 transition-all ${
                       isListening
                         ? "bg-rose-600 text-white border-rose-600 animate-pulse"
-                        : "bg-gray-100 border-gray-300 text-slate-700 hover:bg-gray-200"
+                        : "bg-[#f6fbf7] border-[#dce9df] text-[#163025] hover:bg-[#ecfdf5]"
                     }`}
                   >
                     <Mic className="w-4 h-4" />
@@ -319,7 +319,7 @@ export default function FarmerPwaMainPage() {
             {/* 2. WEATHER CARD */}
             <Link
               href="/farmer/weather"
-              className="block bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:border-emerald-500 transition-all group"
+              className="block bg-white border border-[#dce9df] rounded-2xl p-4 shadow-xs hover:border-[#059669]/60 transition-all group"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -327,11 +327,11 @@ export default function FarmerPwaMainPage() {
                     <Sun className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#5f7469] flex items-center gap-1">
                       <span>Hyper-Local Weather</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600" />
+                      <ChevronRight className="w-3.5 h-3.5 text-[#9db5a5] group-hover:text-[#059669]" />
                     </p>
-                    <p className="text-sm font-extrabold text-slate-900">
+                    <p className="text-sm font-extrabold text-[#163025]">
                       La Trinidad, Benguet: 22°C (Cached)
                     </p>
                   </div>
@@ -345,19 +345,19 @@ export default function FarmerPwaMainPage() {
             </Link>
 
             {/* 3. FINANCIAL LEDGER */}
-            <section className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+            <section className="bg-white border border-[#dce9df] rounded-2xl p-5 shadow-xs">
               <div className="flex items-center justify-between mb-3">
                 <Link href="/farmer/ledger" className="flex items-center gap-2 group">
-                  <h2 className="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                  <h2 className="text-sm font-bold text-[#163025] group-hover:text-[#059669] transition-colors">
                     Financial Ledger (This Month)
                   </h2>
-                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600" />
+                  <ChevronRight className="w-4 h-4 text-[#9db5a5] group-hover:text-[#059669]" />
                 </Link>
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <div className="p-3 rounded-xl bg-rose-50 border border-rose-200">
-                  <p className="text-[11px] font-bold text-slate-600 flex items-center gap-1">
+                  <p className="text-[11px] font-bold text-[#5f7469] flex items-center gap-1">
                     <TrendingDown className="w-3.5 h-3.5 text-rose-600" />
                     Total Costs
                   </p>
@@ -367,7 +367,7 @@ export default function FarmerPwaMainPage() {
                 </div>
 
                 <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
-                  <p className="text-[11px] font-bold text-slate-600 flex items-center gap-1">
+                  <p className="text-[11px] font-bold text-[#5f7469] flex items-center gap-1">
                     <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
                     Total Sales
                   </p>
@@ -379,15 +379,15 @@ export default function FarmerPwaMainPage() {
 
               <div className="space-y-1.5">
                 {recentEntries.length === 0 ? (
-                  <p className="text-xs text-slate-500 py-2 text-center">No transactions recorded yet.</p>
+                  <p className="text-xs text-[#5f7469] py-2 text-center">No transactions recorded yet.</p>
                 ) : (
                   recentEntries.map((tx) => (
                     <Link
                       key={tx.id}
                       href={tx.url}
-                      className="py-1.5 px-2.5 rounded-lg bg-slate-50 border border-gray-200 hover:bg-slate-100 flex items-center justify-between text-xs transition-colors"
+                      className="py-1.5 px-2.5 rounded-lg bg-[#f6fbf7] border border-[#dce9df] hover:bg-[#ecfdf5] flex items-center justify-between text-xs transition-colors"
                     >
-                      <span className="font-semibold text-slate-800 truncate max-w-[170px]">
+                      <span className="font-semibold text-[#163025] truncate max-w-[170px]">
                         {tx.desc}
                       </span>
                       <span
@@ -417,16 +417,16 @@ export default function FarmerPwaMainPage() {
       {confirmModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-md bg-white rounded-3xl p-6 space-y-4 shadow-2xl animate-in fade-in">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+            <div className="flex items-center justify-between border-b border-[#dce9df] pb-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-emerald-600" />
-                <h3 className="font-extrabold text-base text-slate-900">
+                <h3 className="font-extrabold text-base text-[#163025]">
                   Confirm AI Parsed Log
                 </h3>
               </div>
               <button
                 onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
-                className="p-1.5 rounded-full hover:bg-gray-100 text-slate-500"
+                className="p-1.5 rounded-full hover:bg-[#f6fbf7] text-[#5f7469]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -434,11 +434,11 @@ export default function FarmerPwaMainPage() {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Detected Type</label>
+                <label className="block font-bold text-[#163025] mb-1">Detected Type</label>
                 <select
                   value={confirmModal.logType}
                   onChange={(e) => setConfirmModal({ ...confirmModal, logType: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-gray-300 font-semibold"
+                  className="w-full p-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-semibold text-[#163025]"
                 >
                   <option value="SALE">SALE (Benta)</option>
                   <option value="EXPENSE">EXPENSE (Gastos / Abono)</option>
@@ -448,22 +448,22 @@ export default function FarmerPwaMainPage() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Description / Title</label>
+                <label className="block font-bold text-[#163025] mb-1">Description / Title</label>
                 <input
                   type="text"
                   value={confirmModal.title}
                   onChange={(e) => setConfirmModal({ ...confirmModal, title: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-gray-300 font-semibold"
+                  className="w-full p-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-semibold text-[#163025]"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Amount (₱ or Kg)</label>
+                <label className="block font-bold text-[#163025] mb-1">Amount (₱ or Kg)</label>
                 <input
                   type="number"
                   value={confirmModal.amount}
                   onChange={(e) => setConfirmModal({ ...confirmModal, amount: parseFloat(e.target.value) || 0 })}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-gray-300 font-extrabold text-emerald-700"
+                  className="w-full p-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] font-extrabold text-[#059669]"
                 />
               </div>
             </div>
@@ -471,7 +471,7 @@ export default function FarmerPwaMainPage() {
             <div className="pt-2 flex items-center gap-2">
               <button
                 onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
-                className="w-1/2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs"
+                className="w-1/2 py-2.5 rounded-xl bg-[#f6fbf7] hover:bg-[#dce9df] text-[#163025] font-bold text-xs"
               >
                 Cancel
               </button>

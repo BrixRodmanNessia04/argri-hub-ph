@@ -6,7 +6,7 @@ import { ShieldCheck, Building2, Users, ShoppingCart, AlertTriangle, RefreshCw }
 
 export default function AdminDashboardPage() {
   return (
-    <div className="min-h-[calc(100vh-57px)] bg-[#f6fbf7] text-[#163025] flex font-sans">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] flex font-sans">
       <AdminSidebarNav />
 
       <main className="flex-1 p-6 md:p-8 overflow-y-auto space-y-8 max-w-7xl mx-auto w-full">
