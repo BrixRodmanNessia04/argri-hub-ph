@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PublicHeader from "@/components/public/PublicHeader";
 import PublicFooter from "@/components/public/PublicFooter";
-import { Sprout, CheckCircle2, ArrowRight, ArrowLeft, User, Building2, MapPin, ShieldCheck } from "lucide-react";
+import { Sprout, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -35,17 +35,17 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] flex flex-col font-sans">
       <PublicHeader />
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <div className="w-full max-w-lg bg-white border border-[#dce9df] rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
           {/* Progress Indicator */}
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div className="flex items-center justify-between border-b border-[#dce9df] pb-4">
             <div>
-              <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider">
+              <span className="text-[10px] font-black uppercase text-[#059669] tracking-wider">
                 STEP {step} OF 4
               </span>
-              <h1 className="text-lg font-extrabold text-white">
+              <h1 className="text-lg font-extrabold text-[#163025]">
                 {step === 1 && "Account Information"}
                 {step === 2 && "Select Primary Role"}
                 {step === 3 && "Location & Production Details"}
@@ -56,7 +56,7 @@ export default function RegisterPage() {
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className={`w-6 h-1.5 rounded-full ${i <= step ? "bg-emerald-500" : "bg-slate-800"}`}
+                  className={`w-6 h-1.5 rounded-full ${i <= step ? "bg-[#059669]" : "bg-[#dce9df]"}`}
                 />
               ))}
             </div>
@@ -67,45 +67,45 @@ export default function RegisterPage() {
             {step === 1 && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-slate-400 mb-1">Full Name *</label>
+                  <label className="block text-[#5f7469] mb-1">Full Name *</label>
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Juan Dela Cruz"
-                    className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
+                    className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Email Address *</label>
+                  <label className="block text-[#5f7469] mb-1">Email Address *</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="juan@example.ph"
-                    className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
+                    className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Password *</label>
+                  <label className="block text-[#5f7469] mb-1">Password *</label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
+                    className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Mobile Phone (+63)</label>
+                  <label className="block text-[#5f7469] mb-1">Mobile Phone (+63)</label>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="09171234567"
-                    className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
+                    className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
                   />
                 </div>
               </div>
@@ -114,7 +114,7 @@ export default function RegisterPage() {
             {/* STEP 2 */}
             {step === 2 && (
               <div className="space-y-3">
-                <label className="block text-slate-400 mb-2">Choose your primary platform role:</label>
+                <label className="block text-[#5f7469] mb-2">Choose your primary platform role:</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   {[
                     { id: "farmer", label: "Farmer", desc: "Crop farming & plots" },
@@ -130,12 +130,12 @@ export default function RegisterPage() {
                       onClick={() => setPrimaryRole(r.id)}
                       className={`p-3.5 rounded-2xl border text-left transition-all ${
                         primaryRole === r.id
-                          ? "bg-emerald-600/20 border-emerald-500 text-white shadow-md"
-                          : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
+                          ? "bg-[#ecfdf5] border-[#059669] text-[#047857] shadow-xs font-black"
+                          : "bg-[#f6fbf7] border-[#dce9df] text-[#163025] hover:border-[#059669]"
                       }`}
                     >
                       <span className="font-extrabold text-sm block">{r.label}</span>
-                      <span className="text-[11px] text-slate-400 font-normal">{r.desc}</span>
+                      <span className="text-[11px] text-[#5f7469] font-normal">{r.desc}</span>
                     </button>
                   ))}
                 </div>
@@ -147,47 +147,47 @@ export default function RegisterPage() {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-400 mb-1">Province *</label>
+                    <label className="block text-[#5f7469] mb-1">Province *</label>
                     <input
                       type="text"
                       value={province}
                       onChange={(e) => setProvince(e.target.value)}
-                      className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
+                      className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">City / Municipality *</label>
+                    <label className="block text-[#5f7469] mb-1">City / Municipality *</label>
                     <input
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
+                      className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
                       required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">Primary Commodity / Species</label>
+                  <label className="block text-[#5f7469] mb-1">Primary Commodity / Species</label>
                   <input
                     type="text"
                     value={commodity}
                     onChange={(e) => setCommodity(e.target.value)}
                     placeholder="e.g. Cabbage, Tilapia, Swine"
-                    className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
+                    className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
                   />
                 </div>
 
                 {(primaryRole === "coop" || primaryRole === "buyer" || primaryRole === "processor") && (
                   <div>
-                    <label className="block text-slate-400 mb-1">Organization Name</label>
+                    <label className="block text-[#5f7469] mb-1">Organization Name</label>
                     <input
                       type="text"
                       value={orgName}
                       onChange={(e) => setOrgName(e.target.value)}
                       placeholder="e.g. Benguet Agriculture Cooperative"
-                      className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold"
+                      className="w-full p-3.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] font-bold"
                     />
                   </div>
                 )}
@@ -196,22 +196,22 @@ export default function RegisterPage() {
 
             {/* STEP 4 */}
             {step === 4 && (
-              <div className="space-y-3 text-slate-300 font-semibold p-4 rounded-2xl bg-slate-950 border border-slate-800">
-                <h3 className="text-white font-extrabold text-sm border-b border-slate-800 pb-2">Confirm Registration Details</h3>
-                <p>Full Name: <span className="text-white font-bold">{fullName || "Juan Dela Cruz"}</span></p>
-                <p>Email: <span className="text-white font-bold">{email || "juan@example.ph"}</span></p>
-                <p>Role: <span className="text-emerald-400 font-bold uppercase">{primaryRole}</span></p>
-                <p>Location: <span className="text-white font-bold">{city}, {province}</span></p>
+              <div className="space-y-3 text-[#163025] font-semibold p-4 rounded-2xl bg-[#f6fbf7] border border-[#dce9df]">
+                <h3 className="text-[#163025] font-extrabold text-sm border-b border-[#dce9df] pb-2">Confirm Registration Details</h3>
+                <p>Full Name: <span className="text-[#163025] font-bold">{fullName || "Juan Dela Cruz"}</span></p>
+                <p>Email: <span className="text-[#163025] font-bold">{email || "juan@example.ph"}</span></p>
+                <p>Role: <span className="text-[#059669] font-black uppercase">{primaryRole}</span></p>
+                <p>Location: <span className="text-[#163025] font-bold">{city}, {province}</span></p>
               </div>
             )}
 
             {/* Step Controls */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+            <div className="flex items-center justify-between pt-4 border-t border-[#dce9df]">
               {step > 1 ? (
                 <button
                   type="button"
                   onClick={() => setStep(step - 1)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white font-bold text-xs flex items-center gap-1"
+                  className="px-4 py-2.5 rounded-xl bg-[#f6fbf7] border border-[#dce9df] text-[#163025] hover:bg-[#ecfdf5] font-bold text-xs flex items-center gap-1"
                 >
                   <ArrowLeft className="w-4 h-4" /> Back
                 </button>
@@ -221,7 +221,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setStep(step + 1)}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md flex items-center gap-1"
+                  className="px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-xs shadow-md flex items-center gap-1"
                 >
                   <span>Continue</span>
                   <ArrowRight className="w-4 h-4" />
@@ -230,7 +230,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md flex items-center gap-1"
+                  className="px-6 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-xs shadow-md flex items-center gap-1"
                 >
                   {loading ? <span>Submitting...</span> : <span>Complete Registration</span>}
                 </button>
@@ -238,9 +238,9 @@ export default function RegisterPage() {
             </div>
           </form>
 
-          <p className="text-center text-slate-400 text-xs pt-2">
+          <p className="text-center text-[#5f7469] text-xs pt-2 font-normal">
             Already have an account?{" "}
-            <Link href="/login" className="text-emerald-400 font-extrabold hover:underline">
+            <Link href="/login" className="text-[#059669] font-extrabold hover:underline">
               Sign In
             </Link>
           </p>

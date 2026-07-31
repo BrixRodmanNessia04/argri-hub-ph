@@ -8,14 +8,14 @@ import { Sprout, Fish, Building2, Store, Factory, Truck, Landmark, Coins } from 
 
 export default function SolutionsPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f6fbf7] text-[#163025] flex flex-col font-sans">
       <PublicHeader />
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-12 space-y-8">
         <div className="space-y-2 text-center max-w-2xl mx-auto">
-          <span className="px-3 py-1 rounded-full bg-teal-500/10 text-teal-400 text-xs font-bold border border-teal-500/20">
+          <span className="px-3 py-1 rounded-full bg-[#ecfdf5] text-[#047857] text-xs font-extrabold border border-[#a7f3d0]">
             VALUE CHAIN SOLUTIONS
           </span>
-          <h1 className="text-3xl font-extrabold text-white">Solutions for Every Persona</h1>
+          <h1 className="text-3xl font-extrabold text-[#163025]">Solutions for Every Persona</h1>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
@@ -27,15 +27,15 @@ export default function SolutionsPage() {
             { role: "Processors", icon: Factory, link: "/demo/processor", desc: "Batch drying, packaging production lines, and FDA compliance." },
             { role: "Logistics", icon: Truck, link: "/demo/transport", desc: "Cold-chain reefer van dispatch and 4°C temperature telemetry." },
             { role: "Government", icon: Landmark, link: "/demo/government", desc: "LGU harvest monitoring, BFAR fisheries, and subsidy distribution." },
-            { role: "Financial", icon: Coins, link: "/demo/admin", desc: "Agri-credit scoring, production micro-loans, and PCIC claims." },
+            { role: "Financial", icon: Coins, link: "/demo/finance", desc: "Agri-credit scoring, production micro-loans, and PCIC claims." },
           ].map((s) => {
             const Icon = s.icon;
             return (
-              <div key={s.role} className="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-2 shadow-xl">
-                <Icon className="w-5 h-5 text-teal-400" />
-                <h3 className="font-extrabold text-sm text-white">{s.role}</h3>
-                <p className="text-slate-400 font-normal leading-relaxed">{s.desc}</p>
-                <Link href={s.link} className="inline-block text-teal-400 font-bold hover:underline pt-2">
+              <div key={s.role} className="p-5 rounded-3xl bg-white border border-[#dce9df] space-y-2 shadow-xs hover:border-[#059669]">
+                <Icon className="w-5 h-5 text-[#059669]" />
+                <h3 className="font-extrabold text-sm text-[#163025]">{s.role}</h3>
+                <p className="text-[#5f7469] font-normal leading-relaxed">{s.desc}</p>
+                <Link href={s.link} className="inline-block text-[#059669] font-bold hover:underline pt-2">
                   Try {s.role} Demo →
                 </Link>
               </div>
