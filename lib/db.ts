@@ -1095,6 +1095,9 @@ export async function seedProductionDatabase() {
     { ...base, localId: 'catch-1', tripId: trip1Id, speciesName: 'Yellowfin Tuna (Tambakol)', weightKg: 450, qualityGrade: 'Class A', preservationMethod: 'chilled_ice', caughtAtDate: today, forSaleKg: 450 },
     { ...base, localId: 'catch-2', tripId: trip1Id, speciesName: 'Round Scad (Galunggong)', weightKg: 320, qualityGrade: 'Class A', preservationMethod: 'chilled_ice', caughtAtDate: today, forSaleKg: 320 },
   ]);
+
+  const { seedSampleAccountsIntoDexie } = await import("./seedAccounts");
+  await seedSampleAccountsIntoDexie();
 }
 
 export async function resetProductionDatabase() {
