@@ -24,6 +24,7 @@ import {
 import CropInsights from "@/components/CropInsights";
 import FarmerInventory from "@/components/FarmerInventory";
 import FarmerSubNav from "@/components/FarmerSubNav";
+import RsbsaCompletionCard from "@/components/onboarding/RsbsaCompletionCard";
 
 export default function FarmerPwaMainPage() {
   const [smartInput, setSmartInput] = useState("");
@@ -249,7 +250,9 @@ export default function FarmerPwaMainPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 mt-5">
+      <main className="max-w-7xl mx-auto px-4 mt-5 space-y-4">
+        <RsbsaCompletionCard role="farmer" completedItemsCount={4} totalItemsCount={9} />
+
         {toastMessage && (
           <div className="p-3.5 mb-5 rounded-xl bg-emerald-600 text-white font-semibold text-xs flex items-center justify-between shadow-md">
             <div className="flex items-center gap-2">

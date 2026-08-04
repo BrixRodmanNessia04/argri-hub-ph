@@ -218,6 +218,35 @@ export interface DemoNegotiationEvent {
   createdAt: string;
 }
 
+export interface DemoRsbsaProfile {
+  localId: string;
+  userId: string;
+  role: 'farmer' | 'fisher' | 'farmer_and_fisher';
+  rsbsaNumber?: string;
+  surname: string;
+  firstName: string;
+  middleName?: string;
+  mobileNumber: string;
+  region: string;
+  province: string;
+  cityMunicipality: string;
+  barangay: string;
+  livelihoodFarmer: boolean;
+  livelihoodFisher: boolean;
+  primaryFarmName?: string;
+  mainCommodity?: string;
+  farmAreaHa?: number;
+  tenureType?: string;
+  primaryFishingArea?: string;
+  fishingType?: string;
+  mainSpecies?: string;
+  usesVessel?: boolean;
+  vesselName?: string;
+  preferredLanguage: string;
+  registrationStatus: 'draft' | 'submitted' | 'verified';
+  profileCompletionPercentage: number;
+}
+
 const demoDb = new Dexie('agrihub-demo') as Dexie & {
   demoFarms: EntityTable<DemoFarm, 'localId'>;
   demoPlots: EntityTable<DemoPlot, 'localId'>;
@@ -237,6 +266,7 @@ const demoDb = new Dexie('agrihub-demo') as Dexie & {
   demoNegotiationOffers: EntityTable<DemoNegotiationOffer, 'localId'>;
   demoNegotiationMessages: EntityTable<DemoNegotiationMessage, 'localId'>;
   demoNegotiationEvents: EntityTable<DemoNegotiationEvent, 'localId'>;
+  demoRsbsaProfiles: EntityTable<DemoRsbsaProfile, 'localId'>;
 };
 
 demoDb.version(2).stores({
@@ -266,12 +296,95 @@ demoDb.version(4).stores({
   demoNegotiationEvents: 'localId, negotiationId, createdAt',
 });
 
+demoDb.version(5).stores({
+  demoRsbsaProfiles: 'localId, userId, role, registrationStatus',
+});
+
 export async function seedDemoDatabase() {
   const count = await demoDb.demoFarms.count();
   const negotiationCount = await demoDb.demoNegotiations.count();
-  if (count > 0 && negotiationCount > 0) return;
+  const profileCount = await demoDb.demoRsbsaProfiles.count();
+  if (count > 0 && negotiationCount > 0 && profileCount > 0) return;
 
   const today = new Date().toISOString().split('T')[0];
+
+  // 0. RSBSA Profiles Seed Data
+  await demoDb.demoRsbsaProfiles.bulkPut([
+    {
+      localId: 'demo-rsbsa-farmer-1',
+      userId: 'demo-user-farmer',
+      role: 'farmer',
+      rsbsaNumber: '14-11-01-001-000123',
+      surname: 'dela Cruz',
+      firstName: 'Juan',
+      middleName: 'Ramos',
+      mobileNumber: '0917-123-4567',
+      region: 'CAR',
+      province: 'Benguet',
+      cityMunicipality: 'Atok',
+      barangay: 'Sayangan',
+      livelihoodFarmer: true,
+      livelihoodFisher: false,
+      primaryFarmName: 'Atok Highland Terrace',
+      mainCommodity: 'Benguet Cabbage',
+      farmAreaHa: 2.5,
+      tenureType: 'Registered Owner',
+      preferredLanguage: 'Filipino',
+      registrationStatus: 'verified',
+      profileCompletionPercentage: 100,
+    },
+    {
+      localId: 'demo-rsbsa-fisher-1',
+      userId: 'demo-user-fisher',
+      role: 'fisher',
+      rsbsaNumber: '01-55-08-002-000456',
+      surname: 'Penduko',
+      firstName: 'Pedro',
+      middleName: 'Santos',
+      mobileNumber: '0918-987-6543',
+      region: 'REGION_1',
+      province: 'Pangasinan',
+      cityMunicipality: 'Bolinao',
+      barangay: 'Luciente 1st',
+      livelihoodFarmer: false,
+      livelihoodFisher: true,
+      primaryFishingArea: 'Lingayen Gulf',
+      fishingType: 'Municipal Capture Fishing',
+      mainSpecies: 'Yellowfin Tuna',
+      usesVessel: true,
+      vesselName: 'FB San Jose Marine Vessel',
+      preferredLanguage: 'English',
+      registrationStatus: 'verified',
+      profileCompletionPercentage: 100,
+    },
+    {
+      localId: 'demo-rsbsa-dual-1',
+      userId: 'demo-user-dual',
+      role: 'farmer_and_fisher',
+      rsbsaNumber: '01-28-04-003-000789',
+      surname: 'Santos',
+      firstName: 'Maria',
+      middleName: 'Cruz',
+      mobileNumber: '0920-555-8899',
+      region: 'REGION_1',
+      province: 'Ilocos Norte',
+      cityMunicipality: 'Currimao',
+      barangay: 'Poblacion',
+      livelihoodFarmer: true,
+      livelihoodFisher: true,
+      primaryFarmName: 'Ilocos Garlic & Corn Plot',
+      mainCommodity: 'Garlic',
+      farmAreaHa: 1.2,
+      tenureType: 'Registered Owner',
+      primaryFishingArea: 'Currimao Coastal Waters',
+      fishingType: 'Seaweed Farming',
+      mainSpecies: 'Seaweed (Kappaphycus)',
+      usesVessel: false,
+      preferredLanguage: 'Ilocano',
+      registrationStatus: 'verified',
+      profileCompletionPercentage: 100,
+    },
+  ]);
 
   // 1. Farms & Plots
   await demoDb.demoFarms.bulkPut([

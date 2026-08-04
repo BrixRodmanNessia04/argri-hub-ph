@@ -297,6 +297,132 @@ export interface GeneralLogEntity extends OfflineBaseEntity {
   date: string;
 }
 
+export interface RsbsaProfileEntity extends OfflineBaseEntity {
+  transactionCode?: string | null;
+  philIdPcn?: string | null;
+  transactionReferenceNumber?: string | null;
+  rsbsaNumber?: string | null;
+
+  surname: string;
+  firstName: string;
+  middleName?: string | null;
+  hasNoMiddleName: boolean;
+  extensionName?: string | null;
+  hasNoExtensionName: boolean;
+
+  sex?: 'male' | 'female' | 'other' | null;
+  dateOfBirth?: string | null;
+  placeOfBirthMunicipality?: string | null;
+  placeOfBirthProvinceStateCountry?: string | null;
+
+  mothersMaidenFirstName?: string | null;
+  mothersMaidenMiddleName?: string | null;
+  mothersMaidenSurname?: string | null;
+  mothersMaidenExtensionName?: string | null;
+
+  civilStatus?: 'single' | 'married' | 'widow_widower' | 'legally_separated' | null;
+  spouseFirstName?: string | null;
+  spouseMiddleName?: string | null;
+  spouseSurname?: string | null;
+  spouseExtensionName?: string | null;
+
+  highestFormalEducation?: string | null;
+  religion?: string | null;
+
+  isIccIp: boolean;
+  iccIpName?: string | null;
+  isPwd: boolean;
+  is4psBeneficiary: boolean;
+
+  livelihoodFarmer: boolean;
+  livelihoodFarmWorker: boolean;
+  livelihoodFisher: boolean;
+  livelihoodAgriYouth: boolean;
+
+  registrationStatus: 'draft' | 'submitted' | 'under_review' | 'verified' | 'rejected';
+  profileCompletionPercentage: number;
+}
+
+export interface ProfileAddressEntity extends OfflineBaseEntity {
+  addressType: 'permanent' | 'ncr_provincial';
+  houseLotBldgPurok?: string | null;
+  streetSitioSubdivision?: string | null;
+  barangay: string;
+  cityMunicipality: string;
+  province: string;
+  region: string;
+}
+
+export interface ProfileMobileContactEntity extends OfflineBaseEntity {
+  mobileNumber: string;
+  isOwned: boolean;
+  ownerFullName?: string | null;
+  ownerRelationship?: string | null;
+}
+
+export interface ProfileMembershipEntity extends OfflineBaseEntity {
+  organizationName: string;
+  organizationType?: string;
+}
+
+export interface ProfileIdentityDocEntity extends OfflineBaseEntity {
+  idType: string;
+  idNumber: string;
+  documentImageUrl?: string | null;
+}
+
+export interface ProfileFarmParcelEntity extends OfflineBaseEntity {
+  parcelNumber: number;
+  barangay: string;
+  cityMunicipality: string;
+  province: string;
+
+  totalAreaHa: number;
+  withinAncestralDomain: boolean;
+  isArbBeneficiary: boolean;
+
+  ownershipProofType?: string | null;
+  tenureType: string;
+  landownerName?: string | null;
+  landownerRsbsaNumber?: string | null;
+  rotationalTillerName?: string | null;
+  rotationalTillerRsbsaNumber?: string | null;
+
+  croppingSchedule?: string | null;
+  mainCommodity: string;
+  sizeHa?: number | null;
+  headOrTreeCount?: number | null;
+  farmType?: 'irrigated' | 'rainfed_upland' | 'rainfed_lowland' | 'urban_peri_urban' | 'not_applicable' | null;
+  isOrganic: boolean;
+  intercroppingDetails?: string | null;
+  remarks?: string | null;
+}
+
+export interface ProfileFisheriesEntity extends OfflineBaseEntity {
+  fishingType: string;
+  primaryFishingArea: string;
+  fishingAreaType?: string | null;
+  mainSpecies: string;
+
+  usesVessel: boolean;
+  vesselName?: string | null;
+  vesselType?: string | null;
+  vesselOwnership?: string | null;
+  vesselRegistrationNumber?: string | null;
+  vesselCrewCapacity?: number | null;
+
+  aquacultureSiteType?: string | null;
+  aquacultureSiteLocation?: string | null;
+}
+
+export interface ProfileConsentEntity extends OfflineBaseEntity {
+  registrantPrintedName: string;
+  consentGivenAt: string;
+  signatureMetadata?: string | null;
+  privacyPolicyAcknowledged: boolean;
+  daDisclaimerAcknowledged: boolean;
+}
+
 export interface FormDraftEntity {
   key: string; // e.g. "draft_farm_new", "draft_harvest_new"
   formId: string;
@@ -684,6 +810,16 @@ const db = new Dexie('AgriAppDB') as Dexie & {
   livestockPoultryBatches: EntityTable<LivestockPoultryBatchEntity, 'localId'>;
   healthObservations: EntityTable<HealthObservationEntity, 'localId'>;
   productionForecasts: EntityTable<ProductionForecastEntity, 'localId'>;
+
+  // RSBSA Enrollment Foundation Tables
+  rsbsaProfiles: EntityTable<RsbsaProfileEntity, 'localId'>;
+  profileAddresses: EntityTable<ProfileAddressEntity, 'localId'>;
+  profileMobileContacts: EntityTable<ProfileMobileContactEntity, 'localId'>;
+  profileMemberships: EntityTable<ProfileMembershipEntity, 'localId'>;
+  profileIdentityDocuments: EntityTable<ProfileIdentityDocEntity, 'localId'>;
+  profileFarmParcels: EntityTable<ProfileFarmParcelEntity, 'localId'>;
+  profileFisheries: EntityTable<ProfileFisheriesEntity, 'localId'>;
+  profileConsents: EntityTable<ProfileConsentEntity, 'localId'>;
 };
 
 db.version(1).stores({
@@ -842,6 +978,16 @@ db.version(7).stores({
   livestockPoultryBatches: 'localId, serverId, siteId, animalType, status, syncStatus, startDate',
   healthObservations: 'localId, serverId, sector, observationType, severity, syncStatus, observedAt',
   productionForecasts: 'localId, cooperativeId, producerUserId, commodityName, sector, forecastWindowStart',
+
+  // RSBSA Enrollment Foundation Tables
+  rsbsaProfiles: 'localId, serverId, userId, surname, rsbsaNumber, registrationStatus, syncStatus, updatedAt',
+  profileAddresses: 'localId, serverId, userId, addressType, province, cityMunicipality, syncStatus, updatedAt',
+  profileMobileContacts: 'localId, serverId, userId, mobileNumber, isOwned, syncStatus, updatedAt',
+  profileMemberships: 'localId, serverId, userId, organizationName, syncStatus, updatedAt',
+  profileIdentityDocuments: 'localId, serverId, userId, idType, idNumber, syncStatus, updatedAt',
+  profileFarmParcels: 'localId, serverId, userId, parcelNumber, barangay, cityMunicipality, syncStatus, updatedAt',
+  profileFisheries: 'localId, serverId, userId, mainSpecies, primaryFishingArea, syncStatus, updatedAt',
+  profileConsents: 'localId, serverId, userId, consentGivenAt, syncStatus, updatedAt',
 });
 
 export function generateLocalId(): string {

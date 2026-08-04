@@ -1,13 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/lib/db";
 import FarmerSubNav from "@/components/FarmerSubNav";
 import ProfileHeader from "@/components/profile/ProfileHeader";
-import ProfileCompletionCard, { CompletionItem } from "@/components/profile/ProfileCompletionCard";
+import ProfileCompletionChecklist from "@/components/profile/ProfileCompletionChecklist";
+import { ProducerWorkspaceProvider, useProducerWorkspace } from "@/lib/producerContext";
+import { loadRsbsaDraft } from "@/lib/rsbsaRepository";
 import {
   User,
   Edit,
@@ -26,38 +28,37 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-export default function FarmerProfilePage() {
+function FarmerProfileContent() {
   const router = useRouter();
+  const { buildPath, mode, userId } = useProducerWorkspace();
 
   const session = useLiveQuery(() => db.localSession.toCollection().first(), []) || null;
   const farms = useLiveQuery(() => db.farms.filter((f) => !f.isDeleted).toArray(), []) || [];
   const cropCycles = useLiveQuery(() => db.cropCycles.filter((c) => !c.isDeleted).toArray(), []) || [];
   const pendingSync = useLiveQuery(() => db.syncQueue.toArray(), []) || [];
+  const profile = useLiveQuery(() => db.rsbsaProfiles.filter((p) => p.userId === userId).first(), [userId]) || null;
+  const address = useLiveQuery(() => db.profileAddresses.filter((a) => a.userId === userId).first(), [userId]) || null;
 
-  const farmerName = session?.name || "Juan dela Cruz";
-  const farmerPhone = session?.phone || "0917-123-4567";
+  const contact = useLiveQuery(() => db.profileMobileContacts.filter((c) => c.userId === userId).first(), [userId]) || null;
+
+  const farmerName = profile ? `${profile.firstName} ${profile.surname}` : session?.name || "Juan dela Cruz";
+  const farmerPhone = contact?.mobileNumber || session?.phone || "0917-123-4567";
   const farmerEmail = "juan.farmer@agrihub.ph";
   const farmerLang = "Tagalog / English";
-  const location = "Sitio Balili, La Trinidad, Benguet";
+  const location = address
+    ? `${address.barangay}, ${address.cityMunicipality}, ${address.province}`
+    : "Sitio Balili, La Trinidad, Benguet";
   const coopName = "Benguet Farmers Cooperative #456";
-
-  const completionItems: CompletionItem[] = [
-    { key: "name", label: "Full Name Provided", isComplete: !!farmerName },
-    { key: "phone", label: "Mobile Phone Verified", isComplete: !!farmerPhone },
-    { key: "location", label: "Farm Location Set", isComplete: !!location },
-    { key: "farm", label: "At least 1 Farm Registered", isComplete: farms.length > 0 },
-    { key: "lang", label: "Preferred Language Selected", isComplete: !!farmerLang },
-  ];
 
   const handleSignOut = async () => {
     if (confirm("Sign out of AgriHub PH local session? Unsynced records will remain safe in local offline storage.")) {
       await db.localSession.clear();
-      router.push("/");
+      router.push(buildPath("/"));
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 pb-28">
+    <div className="min-h-screen bg-slate-100 text-slate-900 pb-28 font-sans">
       <FarmerSubNav />
 
       <main className="max-w-4xl mx-auto p-4 space-y-6 mt-2">
@@ -69,21 +70,21 @@ export default function FarmerProfilePage() {
           isVerified={true}
           isOnline={typeof navigator !== "undefined" ? navigator.onLine : true}
           pendingSyncCount={pendingSync.length}
-          onSyncClick={() => router.push("/farmer/sync")}
+          onSyncClick={() => router.push(buildPath("/farmer/sync"))}
         />
 
-        {/* Profile Completion Indicator */}
-        <ProfileCompletionCard items={completionItems} />
+        {/* RSBSA Profile Completion Checklist */}
+        <ProfileCompletionChecklist percentage={profile?.profileCompletionPercentage || 80} role="farmer" />
 
         {/* Quick Actions Grid */}
-        <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-sm space-y-3">
+        <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-xs space-y-3">
           <h2 className="text-sm font-extrabold text-slate-900">
-            Farmer Quick Actions
+            Farmer Profile &amp; Quick Actions
           </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <Link
-              href="/farmer/farms/new"
+              href={buildPath("/farmer/farms/new")}
               className="p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 font-bold flex flex-col items-center text-center gap-1.5 transition-all"
             >
               <Plus className="w-5 h-5 text-emerald-600" />
@@ -91,15 +92,15 @@ export default function FarmerProfilePage() {
             </Link>
 
             <Link
-              href="/farmer/profile/edit"
+              href={buildPath("/farmer/profile/personal")}
               className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-gray-200 text-slate-800 font-bold flex flex-col items-center text-center gap-1.5 transition-all"
             >
               <Edit className="w-5 h-5 text-slate-700" />
-              <span>Edit Details</span>
+              <span>Edit RSBSA Profile</span>
             </Link>
 
             <Link
-              href="/farmer/cooperative"
+              href={buildPath("/farmer/cooperative")}
               className="p-3.5 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 font-bold flex flex-col items-center text-center gap-1.5 transition-all"
             >
               <Users className="w-5 h-5 text-blue-600" />
@@ -107,7 +108,7 @@ export default function FarmerProfilePage() {
             </Link>
 
             <Link
-              href="/farmer/sync"
+              href={buildPath("/farmer/sync")}
               className="p-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold flex flex-col items-center text-center gap-1.5 transition-all"
             >
               <RefreshCw className="w-5 h-5 text-amber-600" />
@@ -117,20 +118,20 @@ export default function FarmerProfilePage() {
         </div>
 
         {/* Profile Information Cards */}
-        <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm space-y-5">
+        <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-5">
           <div className="flex items-center justify-between border-b border-gray-100 pb-3">
             <div className="flex items-center gap-2">
               <User className="w-5 h-5 text-emerald-600" />
               <h2 className="text-base font-extrabold text-slate-900">
-                Personal Information
+                Personal Information Summary
               </h2>
             </div>
 
             <Link
-              href="/farmer/profile/edit"
+              href={buildPath("/farmer/profile/personal")}
               className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center gap-1 shrink-0"
             >
-              <Edit className="w-3.5 h-3.5" /> Edit Profile
+              <Edit className="w-3.5 h-3.5" /> Edit RSBSA Form
             </Link>
           </div>
 
@@ -182,9 +183,9 @@ export default function FarmerProfilePage() {
         </div>
 
         {/* Links & Sign Out */}
-        <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-sm space-y-2 text-xs font-bold">
+        <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-xs space-y-2 text-xs font-bold">
           <Link
-            href="/farmer/help"
+            href={buildPath("/farmer/help")}
             className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-slate-800"
           >
             <div className="flex items-center gap-2.5">
@@ -207,5 +208,13 @@ export default function FarmerProfilePage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function FarmerProfilePage() {
+  return (
+    <ProducerWorkspaceProvider overrideMode="production" overrideRole="farmer">
+      <FarmerProfileContent />
+    </ProducerWorkspaceProvider>
   );
 }

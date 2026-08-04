@@ -74,22 +74,22 @@ export default function CropInsights() {
                 className="min-w-[280px] md:min-w-0 snap-center bg-white border border-gray-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between hover:border-emerald-500 transition-all"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 truncate max-w-[140px]">
-                      {farmName}
+                  <div className="flex min-w-0 flex-col gap-1.5 mb-3">
+                    <span className="w-full min-w-0 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200 block text-left truncate">
+                      Farm: {farmName}
                     </span>
 
-                    {/* Plot Badge - Requirement 10: Clickable plot badge to /farmer/plots/[id] */}
+                    {/* Plot Badge */}
                     <Link
                       href={cycle.plotId ? `/farmer/plots/${cycle.plotId}` : "/farmer/plots"}
-                      className="text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded-full flex items-center gap-1"
+                      className="w-full min-w-0 text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl flex items-center gap-1.5"
                     >
-                      <MapPin className="w-3 h-3 text-emerald-600" />
-                      <span>{plotName}</span>
+                      <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span className="truncate">Plot: {plotName}</span>
                     </Link>
                   </div>
 
-                  {/* Crop Card Link - Requirement 10: Clickable crop card to /farmer/crops/[id] */}
+                  {/* Crop Card Link */}
                   <Link href={`/farmer/crops/${cycle.localId}`} className="block group">
                     <h3 className="text-base font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors">
                       {cycle.crop}
@@ -99,37 +99,37 @@ export default function CropInsights() {
                     </p>
                   </Link>
 
-                  <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-gray-100">
-                    <div className="p-2.5 rounded-xl bg-slate-50 border border-gray-200">
+                  <div className="grid grid-cols-1 min-[360px]:grid-cols-3 gap-2 mt-4 pt-4 border-t border-gray-100">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-gray-200 min-w-0">
                       <div className="flex items-center gap-1 text-emerald-700">
-                        <Coins className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-bold uppercase">Est. Net</span>
+                        <Coins className="w-3.5 h-3.5 shrink-0" />
+                        <span className="text-[10px] font-bold uppercase whitespace-nowrap">Est. Net</span>
                       </div>
-                      <p className={`text-xs font-extrabold mt-1 ${estProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                      <p className={`text-xs font-extrabold mt-1 truncate ${estProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
                         ₱{estProfit.toLocaleString()}
                       </p>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-slate-50 border border-gray-200">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-gray-200 min-w-0">
                       <div className="flex items-center gap-1 text-blue-700">
-                        <Scale className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-bold uppercase">Yield</span>
+                        <Scale className="w-3.5 h-3.5 shrink-0" />
+                        <span className="text-[10px] font-bold uppercase whitespace-nowrap">Yield</span>
                       </div>
-                      <p className="text-xs font-extrabold text-slate-900 mt-1">
+                      <p className="text-xs font-extrabold text-slate-900 mt-1 truncate">
                         {harvestedKg} kg
                       </p>
-                      <p className="text-[9px] text-slate-500">of {cycle.expectedYieldKg || 500}kg est</p>
+                      <p className="text-[9px] text-slate-500 truncate">of {cycle.expectedYieldKg || 500}kg est</p>
                     </div>
 
-                    <div className="p-2.5 rounded-xl bg-slate-50 border border-gray-200">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-gray-200 min-w-0">
                       <div className="flex items-center gap-1 text-amber-700">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-bold uppercase">Days</span>
+                        <Clock className="w-3.5 h-3.5 shrink-0" />
+                        <span className="text-[10px] font-bold uppercase whitespace-nowrap">Days</span>
                       </div>
-                      <p className="text-xs font-extrabold text-slate-900 mt-1">
+                      <p className="text-xs font-extrabold text-slate-900 mt-1 truncate">
                         Day {elapsedDays}
                       </p>
-                      <p className="text-[9px] text-slate-500">of {totalDays}d</p>
+                      <p className="text-[9px] text-slate-500 truncate">of {totalDays}d</p>
                     </div>
                   </div>
                 </div>

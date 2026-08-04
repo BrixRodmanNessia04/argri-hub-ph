@@ -18,55 +18,103 @@
   --agri-danger: #dc2626;
 }
 
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+
 body {
   background-color: var(--agri-background);
   color: var(--agri-text);
   font-family: var(--font-geist-sans), sans-serif;
   overflow-x: clip;
-}
-
-html,
-body {
   width: 100%;
-  max-width: 100%;
+  max-width: 100vw;
 }
 
-img,
-video,
-canvas {
-  max-width: 100%;
-  height: auto;
+html {
+  width: 100%;
+  max-width: 100vw;
 }
 
+/* Safe Text Wrapping and Typography — Standard word-break to prevent mid-word splitting */
 p,
 h1,
 h2,
 h3,
 h4,
+h5,
+h6,
 span,
 a,
 button,
 label,
 td,
-th {
-  overflow-wrap: anywhere;
+th,
+dt,
+dd,
+figcaption,
+input,
+select,
+textarea {
+  word-break: normal;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Flex / Grid container safety defaults */
+.flex-col,
+.flex-row,
+.grid {
+  min-width: 0;
+}
+
+/* Helper utilities for explicit text control */
+.text-wrap-safe {
+  min-width: 0;
+  word-break: normal;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.text-nowrap-safe {
+  white-space: nowrap;
+}
+
+/* Safe Area Insets for Mobile PWA & Notch Displays */
+.pwa-safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.pwa-safe-top {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/* Touch Target Minimum Sizing */
 @media (pointer: coarse) {
   button,
   input[type="button"],
   input[type="submit"],
   input[type="reset"],
-  select {
+  select,
+  a.touch-target {
     min-height: 44px;
   }
 }
 
+/* Mobile Responsive Table Transformation */
 @media (max-width: 767px) {
   input,
   select,
   textarea {
-    font-size: 16px;
+    font-size: 16px; /* Prevents auto-zoom on mobile safari */
   }
 
   .responsive-table,
@@ -90,34 +138,32 @@ th {
   }
 
   .responsive-table tbody {
-    padding: 0.75rem;
+    padding: 0.75rem 0;
   }
 
   .responsive-table tbody tr {
     border: 1px solid var(--agri-border);
     border-radius: 1rem;
     background: white;
-    padding: 0.5rem 0.75rem;
-  }
-
-  .responsive-table tbody tr + tr {
-    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   }
 
   .responsive-table tbody td {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
     border: 0;
-    padding: 0.55rem 0;
+    padding: 0.5rem 0;
     text-align: right;
     color: var(--agri-text);
   }
 
   .responsive-table tbody td::before {
     content: attr(data-label);
-    flex: 0 0 42%;
+    flex: 0 0 40%;
     text-align: left;
     color: var(--agri-text-muted);
     font-size: 0.7rem;

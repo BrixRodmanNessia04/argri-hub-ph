@@ -10,6 +10,7 @@ import { useApplicationContext } from "@/lib/ApplicationContext";
 import { hydrateFisheriesFromSupabase } from "@/lib/fisheriesSupabaseRepository";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { Fish, Anchor, Save, CheckCircle2, AlertCircle, RefreshCw, FileText } from "lucide-react";
+import RsbsaCompletionCard from "@/components/onboarding/RsbsaCompletionCard";
 
 export default function FishingOperationsPage() {
   const { mode, userId, organizationId } = useApplicationContext();
@@ -286,6 +287,8 @@ export default function FishingOperationsPage() {
             </button>
           )}
         </div>
+
+        <RsbsaCompletionCard role="fisher" completedItemsCount={4} totalItemsCount={9} />
 
         {feedback && (
           <div className="p-3.5 rounded-xl bg-[#ecfdf5] border border-[#a7f3d0] text-[#047857] text-xs font-bold flex items-center gap-2">
